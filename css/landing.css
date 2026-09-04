@@ -1,0 +1,444 @@
+/* ScoutVision Landing Page Specific Styles - Mirroring Hudl.com */
+
+/* Top Announcement Banner */
+.announcement-banner {
+  background: black;
+  background-image: 
+    radial-gradient(30% 200% at 0% 0%, rgba(255, 59, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%),
+    radial-gradient(40% 200% at 100% 100%, rgba(0, 229, 255, 0.3) 0%, rgba(0, 0, 0, 0) 100%);
+  color: var(--text-primary);
+  padding: 12px 24px;
+  font-size: 0.85rem;
+  text-align: center;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  z-index: 1001;
+  position: relative;
+}
+
+.announcement-banner a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--transition);
+}
+
+.announcement-banner a:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+/* Header Navigation (Hudl Style) */
+header {
+  position: fixed;
+  top: 45px; /* height of announcement banner */
+  left: 0;
+  width: 100%;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(10, 11, 14, 0.95);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transition: top 0.3s;
+}
+
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+/* Interactive Dropdown Menus */
+.nav-menu-item {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-menu-trigger {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 24px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.nav-menu-trigger:hover, .nav-menu-item:hover .nav-menu-trigger {
+  color: var(--primary);
+}
+
+.nav-menu-trigger svg {
+  transition: transform 0.3s;
+}
+
+.nav-menu-item:hover .nav-menu-trigger svg {
+  transform: rotate(180deg);
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  width: 720px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.nav-menu-item:hover .dropdown-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.dropdown-col-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.dropdown-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dropdown-link-item {
+  text-decoration: none;
+  display: flex;
+  gap: 12px;
+  transition: var(--transition);
+}
+
+.dropdown-link-icon {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.dropdown-link-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-link-title {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.dropdown-link-desc {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.dropdown-link-item:hover .dropdown-link-title {
+  color: var(--primary);
+}
+
+/* Feature highlight panel in dropdown */
+.dropdown-feature-panel {
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dropdown-feature-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Full Bleed Hero Video Background */
+.hero-full-bleed {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.hero-video-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: 1;
+  object-fit: cover;
+  opacity: 0.35;
+}
+
+.hero-overlay-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 11, 14, 0.6) 0%, rgba(10, 11, 14, 0.95) 100%);
+  z-index: 2;
+}
+
+.hero-full-bleed .container {
+  position: relative;
+  z-index: 3;
+}
+
+/* Double Action Hero Box (Split) */
+.hero-split-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 48px;
+  max-width: 900px;
+}
+
+.hero-action-card {
+  padding: 40px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+/* Teams Action Card (Orange Theme) */
+.hero-action-card.teams-card {
+  border-left: 4px solid var(--primary);
+  background: linear-gradient(135deg, rgba(20, 22, 31, 0.8) 0%, rgba(255, 59, 0, 0.08) 100%);
+}
+
+.hero-action-card.teams-card:hover {
+  background: linear-gradient(135deg, rgba(20, 22, 31, 0.9) 0%, rgba(255, 59, 0, 0.25) 100%);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(255, 59, 0, 0.15);
+}
+
+/* Fans Action Card (Blue Theme) */
+.hero-action-card.fans-card {
+  border-left: 4px solid var(--accent);
+  background: linear-gradient(135deg, rgba(20, 22, 31, 0.8) 0%, rgba(0, 229, 255, 0.05) 100%);
+}
+
+.hero-action-card.fans-card:hover {
+  background: linear-gradient(135deg, rgba(20, 22, 31, 0.9) 0%, rgba(0, 229, 255, 0.2) 100%);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 229, 255, 0.15);
+}
+
+.action-card-badge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.teams-card:hover .action-card-badge { color: var(--primary); }
+.fans-card:hover .action-card-badge { color: var(--accent); }
+
+.action-card-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-card-title svg {
+  transition: transform 0.3s;
+}
+
+.hero-action-card:hover .action-card-title svg {
+  transform: translateX(6px);
+}
+
+.action-card-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+/* Tabbed Product Explorer Section */
+.explorer-section {
+  padding: 100px 0;
+  background: var(--bg-primary);
+}
+
+.tabs-nav {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 56px;
+  flex-wrap: wrap;
+}
+
+.explorer-tab-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.explorer-tab-btn:hover {
+  color: #fff;
+  border-color: var(--text-muted);
+}
+
+.explorer-tab-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 4px 15px rgba(255, 59, 0, 0.25);
+}
+
+.tab-pane {
+  display: none;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.tab-pane.active {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.tab-features-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 24px 0 32px 0;
+}
+
+.tab-feature-li {
+  display: flex;
+  gap: 12px;
+}
+
+.tab-feature-bullet {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+/* Stats/Trust Bar */
+.trust-bar {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 60px 0;
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: center;
+  gap: 32px;
+}
+
+.trust-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.trust-number {
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.trust-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+/* Sticky Navbar Scroll Effect */
+header.sticky-scrolled {
+  top: 0;
+  background: #0a0b0e;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* Responsive updates */
+@media (max-width: 992px) {
+  .dropdown-content {
+    width: 100%;
+    position: static;
+    transform: none !important;
+    display: none; /* simple accordions for mobile nav */
+    padding: 16px;
+    grid-template-columns: 1fr;
+    box-shadow: none;
+    border: none;
+  }
+  .dropdown-feature-panel {
+    display: none;
+  }
+  .hero-split-actions {
+    grid-template-columns: 1fr;
+  }
+  .tab-pane.active {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .trust-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

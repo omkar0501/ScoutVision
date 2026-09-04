@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ScoutVision - High-performance sports technology, video capture, and tactical whiteboard insights designed to help teams win. Inspired by Hudl.">
+  <title>ScoutVision • The leader in sports technology, video analysis &amp; data</title>
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="shortcut icon" href="assets/logo.jpg" type="image/jpeg">
+</head>
+<body>
+
+  <!-- Top Announcement Banner -->
+  <div class="announcement-banner">
+    <span>✨ <strong>A faster way to fund your season.</strong> Introducing ScoutVision Fundraising: A digital experience that funds your season in an hour.</span>
+    <a href="app.html">
+      Learn more
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    </a>
+  </div>
+
+  <!-- Navigation Header -->
+  <header id="mainHeader">
+    <div class="container">
+      <a href="index.html" class="logo-container">
+        <img src="assets/logo.jpg" alt="ScoutVision Logo" class="logo-img">
+        <span class="logo-text">Scout<span>Vision</span></span>
+      </a>
+      
+      <nav style="display:flex; align-items:center; gap:24px;">
+        <!-- Solutions Dropdown -->
+        <div class="nav-menu-item">
+          <button class="nav-menu-trigger">
+            Solutions
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          
+          <div class="dropdown-content">
+            <div>
+              <h4 class="dropdown-col-title">Browse by Organization</h4>
+              <ul class="dropdown-links">
+                <li>
+                  <a href="app.html" class="dropdown-link-item">
+                    <span class="dropdown-link-icon">⚽</span>
+                    <div class="dropdown-link-text">
+                      <span class="dropdown-link-title">Club and Youth Sports</span>
+                      <span class="dropdown-link-desc">Elevate your club with automatic capture and video reviews.</span>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a href="app.html" class="dropdown-link-item">
+                    <span class="dropdown-link-icon">🏫</span>
+                    <div class="dropdown-link-text">
+                      <span class="dropdown-link-title">High School Departments</span>
+                      <span class="dropdown-link-desc">All-in-one solutions to simplify athletic coaching and review.</span>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a href="app.html" class="dropdown-link-item">
+                    <span class="dropdown-link-icon">🎓</span>
+                    <div class="dropdown-link-text">
+                      <span class="dropdown-link-title">Colleges and Universities</span>
+                      <span class="dropdown-link-desc">Advanced analysis to coordinate scouting under one workspace.</span>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            
+            <div class="dropdown-feature-panel">
+              <h4 class="dropdown-col-title" style="margin-bottom:8px;">Feature Spotlight</h4>
+              <img src="assets/logo.jpg" class="dropdown-feature-img" alt="Whiteboard preview">
+              <h5 style="font-size:0.95rem; font-weight:600; margin-top:8px;">Visual Tactical Playbook</h5>
+              <p style="font-size:0.75rem; color:var(--text-secondary); line-height: 1.4;">Sketch set-piece spacing and drag players on turf whiteboard grid. Instantly sync routines across your squad roster database.</p>
+              <a href="app.html?tab=playbook" style="color:var(--primary); font-size:0.8rem; font-weight:700; text-decoration:none; margin-top:4px; display:inline-flex; align-items:center; gap:4px;">Try whiteboard whiteboard →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products Dropdown -->
+        <div class="nav-menu-item">
+          <button class="nav-menu-trigger">
+            Products
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          
+          <div class="dropdown-content" style="width: 500px; grid-template-columns: 1fr;">
+            <div>
+              <h4 class="dropdown-col-title">Perform &amp; Capture Suite</h4>
+              <ul class="dropdown-links" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <li>
+                  <a href="app.html?tab=video" class="dropdown-link-item">
+                    <span class="dropdown-link-icon">📹</span>
+                    <div class="dropdown-link-text">
+                      <span class="dropdown-link-title">Video Analyzer</span>
+                      <span class="dropdown-link-desc">Draw shapes and arrows over clips.</span>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a href="app.html?tab=playbook" class="dropdown-link-item">
+                    <span class="dropdown-link-icon">📋</span>
+                    <div class="dropdown-link-text">
+                      <span class="dropdown-link-title">Playbook Whiteboard</span>
+                      <span class="dropdown-link-desc">Diagram tactics on 2D soccer field.</span>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a href="app.html?tab=roster" class="dropdown-link-item">
+                    <span class="dropdown-link-icon">👥</span>
+                    <div class="dropdown-link-text">
+                      <span class="dropdown-link-title">Team Roster</span>
+                      <span class="dropdown-link-desc">Manage squad metrics and stats.</span>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a href="app.html?tab=analytics" class="dropdown-link-item">
+                    <span class="dropdown-link-icon">📊</span>
+                    <div class="dropdown-link-text">
+                      <span class="dropdown-link-title">Match Metrics</span>
+                      <span class="dropdown-link-desc">Custom SVG graphics analysis.</span>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <a href="app.html?tab=analytics" style="color:var(--text-secondary); text-decoration:none; font-family:'Outfit'; font-weight:500; font-size:0.95rem;">Pricing</a>
+      </nav>
+      
+      <div class="nav-actions">
+        <a href="app.html" class="btn-login">Log In</a>
+        <a href="app.html" class="btn btn-primary" style="padding:10px 20px;">Enter App</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section with Background Video loop -->
+  <section class="hero-full-bleed">
+    <video autoplay loop muted playsinline class="hero-video-bg">
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-soccer-player-kicking-ball-in-stadium-1558-large.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay-gradient"></div>
+    
+    <div class="container" style="text-align:center;">
+      <h1 class="title-large text-gradient" style="text-shadow:0 4px 10px rgba(0,0,0,0.8);">Win at Every Level.</h1>
+      <p class="hero-subtitle" style="margin-left:auto; margin-right:auto; max-width:650px; text-shadow:0 2px 4px rgba(0,0,0,0.8);">ScoutVision's sports technology software, automatic video capture, and data insights help coaches, athletes, and recruiters analyze, coordinate, and dominate.</p>
+      
+      <!-- Split teams vs fans call to actions -->
+      <div class="hero-split-actions" style="margin-left:auto; margin-right:auto; text-align:left;">
+        <!-- Card 1 -->
+        <a href="app.html" class="hero-action-card teams-card">
+          <span class="action-card-badge">ScoutVision For Teams</span>
+          <h3 class="action-card-title">
+            Coaches, Athletes &amp; Staff
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </h3>
+          <p class="action-card-desc">Review practices, tag events, compile highlight playlists, and sketch whiteboard plays under a unified team dashboard.</p>
+        </a>
+        
+        <!-- Card 2 -->
+        <a href="app.html?tab=video" class="hero-action-card fans-card">
+          <span class="action-card-badge">ScoutVision For Recruiters &amp; Fans</span>
+          <h3 class="action-card-title">
+            Recruiting, Livestreams &amp; Highlights
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </h3>
+          <p class="action-card-desc">Search through athlete metrics, clip soccer action films, and export analytical performance reports.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Metrics Bar -->
+  <section class="trust-bar">
+    <div class="container">
+      <div class="trust-grid">
+        <div class="trust-item">
+          <span class="trust-number">230K+</span>
+          <span class="trust-label">Teams Managed</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-number">8.2M+</span>
+          <span class="trust-label">Active Athletes</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-number">40+</span>
+          <span class="trust-label">Sports Covered</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-number">139+</span>
+          <span class="trust-label">Countries Engaged</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dynamic Product Explorer Tab Section -->
+  <section class="explorer-section" id="products">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="title-medium text-gradient">Tools That Help Everyone Win</h2>
+        <p>Explore ScoutVision's specialized suite of cameras, draw overlays, and play boards designed for sports clubs.</p>
+      </div>
+      
+      <!-- Nav tabs -->
+      <div class="tabs-nav">
+        <button class="explorer-tab-btn active" onclick="switchExploreTab('team-perf')">Team Performance</button>
+        <button class="explorer-tab-btn" onclick="switchExploreTab('athlete-growth')">Athlete Growth</button>
+        <button class="explorer-tab-btn" onclick="switchExploreTab('scout-recruit')">Scouting &amp; Recruiting</button>
+        <button class="explorer-tab-btn" onclick="switchExploreTab('smart-camera')">Automated Smart Camera</button>
+      </div>
+      
+      <!-- Tab 1 -->
+      <div class="tab-pane active" id="tab-team-perf">
+        <div>
+          <h3 style="font-size:1.8rem; margin-bottom:12px;">Unified Film Review</h3>
+          <p style="color:var(--text-secondary);">Empower your coaching staff with deep video analysis. Review match clips frame-by-frame and highlight strategies visually.</p>
+          <ul class="tab-features-list">
+            <li class="tab-feature-li">
+              <span class="tab-feature-bullet">✔</span>
+              <span><strong>Telestration Layer:</strong> Draw tactical lines, runs, circles, and player spotlight isolate apertures directly on paused video.</span>
+            </li>
+            <li class="tab-feature-li">
+              <span class="tab-feature-bullet">✔</span>
+              <span><strong>Timestamp Play Tagging:</strong> Log game events (goals, shots, fouls) synced directly with video timeline bookmarks.</span>
+            </li>
+            <li class="tab-feature-li">
+              <span class="tab-feature-bullet">✔</span>
+              <span><strong>Tactical ホワイトボード:</strong> Sketch set-piece runs on soccer field, placing draggable player tokens.</span>
+            </li>
+          </ul>
+          <a href="app.html" class="btn btn-primary">Open Analyzer Sandbox</a>
+        </div>
+        <div style="border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border-color); box-shadow:var(--shadow); aspect-ratio:16/10; background:#000;">
+          <img src="assets/logo.jpg" style="width:100%; height:100%; object-fit:cover; opacity:0.55;" alt="Performance Workspace Mock">
+        </div>
+      </div>
+      
+      <!-- Tab 2 -->
+      <div class="tab-pane" id="tab-athlete-growth">
+        <div>
+          <h3 style="font-size:1.8rem; margin-bottom:12px;">Showcase Roster &amp; Skills</h3>
+          <p style="color:var(--text-secondary);">Give players ownership of their progression. Log performance stats and compile clips to share with college scouts.</p>
+          <ul class="tab-features-list">
+            <li class="tab-feature-li">
+              <span class="tab-feature-bullet">✔</span>
+              <span><strong>Roster Hub:</strong> Track player ratings, jersey numbers, profile avatars, and squad positions.</span>
+            </li>
+            <li class="tab-feature-li">
+              <span class="tab-feature-bullet">✔</span>
+              <span><strong>Performance Analytics:</strong> Monitor team rating distribution grouped by positions using SVG charts.</span>
+            </li>
+          </ul>
+          <a href="app.html?tab=roster" class="btn btn-primary">Explore Roster Board</a>
+        </div>
+        <div style="border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border-color); box-shadow:var(--shadow); aspect-ratio:16/10; background:#050608; display:flex; justify-content:center; align-items:center; color:var(--text-secondary); font-size: 1.5rem; font-weight:700;">
+          📊 Roster Database Interface
+        </div>
+      </div>
+      
+      <!-- Tab 3 -->
+      <div class="tab-pane" id="tab-scout-recruit">
+        <div>
+          <h3 style="font-size:1.8rem; margin-bottom:12px;">Elite Scouting Database</h3>
+          <p style="color:var(--text-secondary);">Search, filter, and inspect talent profiles worldwide. Cross-reference player highlights with actual matching database statistics.</p>
+          <ul class="tab-features-list">
+            <li class="tab-feature-li">
+              <span class="tab-feature-bullet">✔</span>
+              <span><strong>SVG Metric Graphs:</strong> Visualize play event frequency diagrams (pass, shots, fouls) parsed instantly from tags.</span>
+            </li>
+            <li class="tab-feature-li">
+              <span class="tab-feature-bullet">✔</span>
+              <span><strong>Clip Filter:</strong> Seek instantly to goals and set-pieces tagged during live match analysis.</span>
+            </li>
+          </ul>
+          <a href="app.html?tab=analytics" class="btn btn-primary">Check Analytics Panel</a>
+        </div>
+        <div style="border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border-color); box-shadow:var(--shadow); aspect-ratio:16/10; background:#050608; display:flex; justify-content:center; align-items:center; color:var(--accent); font-size: 1.5rem; font-weight:700;">
+          📈 Analytics Graphing Canvas
+        </div>
+      </div>
+      
+      <!-- Tab 4 -->
+      <div class="tab-pane" id="tab-smart-camera">
+        <div>
+          <h3 style="font-size:1.8rem; margin-bottom:12px;">ScoutVision Focus Flex Camera</h3>
+          <p style="color:var(--text-secondary);">Record and upload every play automatically. Focus Flex smart cameras crop match frames using high-fidelity focal AI.</p>
+          <ul class="tab-features-list">
+            <li class="tab-feature-li">
+              <span class="tab-feature-bullet">✔</span>
+              <span><strong>Auto-Capture:</strong> Start recording directly from mobile apps. The camera tracks players on the field automatically.</span>
+            </li>
+            <li class="tab-feature-li">
+              <span class="tab-feature-bullet">✔</span>
+              <span><strong>Cloud Uplink:</strong> Instantly process, crop, and segment footage into clean match clips ready for tagging.</span>
+            </li>
+          </ul>
+          <a href="app.html?tab=video" class="btn btn-primary">See Focus Integration</a>
+        </div>
+        <div style="border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border-color); box-shadow:var(--shadow); aspect-ratio:16/10; background:#050608; display:flex; justify-content:center; align-items:center; color:var(--primary); font-size: 1.5rem; font-weight:700;">
+          🎥 Focus Flex Hardware Simulation
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- success story block -->
+  <section class="cta-section" style="background:var(--bg-secondary); border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color);">
+    <div class="container" style="max-width:800px; text-align:center;">
+      <h3 style="font-size:2rem; font-weight:700; margin-bottom:16px;">"We get immediate feedback on the sideline..."</h3>
+      <p style="color:var(--text-secondary); font-size:1.1rem; line-height: 1.6; font-style:italic;">"Using ScoutVision's live drawing canvas on our sidelines has transformed our varsity coaching. We can highlight play spacing to defensive lines in real-time, helping us win our league championship."</p>
+      <div style="margin-top:24px; display:flex; align-items:center; justify-content:center; gap:12px;">
+        <div class="user-avatar" style="width:48px; height:48px;">TO</div>
+        <div style="text-align:left;">
+          <h5 style="font-size:0.95rem; font-weight:600;">Coach Terry O'Neil</h5>
+          <span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Varsity Football Director</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom Call to Action -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-box glass" style="border-color: rgba(255, 59, 0, 0.2); box-shadow: 0 0 40px rgba(255,59,0,0.05);">
+        <div class="cta-content">
+          <h2 class="title-medium text-gradient">Ready to lead your team to victory?</h2>
+          <p>Get instant access to ScoutVision's video analyzer, roster editor, and tactical playbooks. Try the sandboxed dashboard platform immediately.</p>
+          <a href="app.html" class="btn btn-primary btn-accent">Request a Demo &amp; Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo-container">
+            <img src="assets/logo.jpg" alt="ScoutVision Logo" class="logo-img">
+            <span class="logo-text">Scout<span>Vision</span></span>
+          </a>
+          <p>The premium sports performance analysis ecosystem empowering coach reviews and player highlight reels.</p>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Solutions</h4>
+          <ul>
+            <li><a href="app.html">Club &amp; Youth</a></li>
+            <li><a href="app.html">High Schools</a></li>
+            <li><a href="app.html">Collegiate Sports</a></li>
+            <li><a href="app.html">Professional Teams</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Products</h4>
+          <ul>
+            <li><a href="app.html?tab=video">Video Analyzer</a></li>
+            <li><a href="app.html?tab=playbook">Whiteboard Pitch</a></li>
+            <li><a href="app.html?tab=roster">Roster Database</a></li>
+            <li><a href="app.html?tab=analytics">Match Metrics</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Support Hub</a></li>
+            <li><a href="#">Tactical Guides</a></li>
+            <li><a href="#">Case Studies</a></li>
+            <li><a href="#">Inclusion &amp; Press</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <div>&copy; 2026 ScoutVision Corp. All rights reserved. Built as a high-fidelity sports tech clone.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Support</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 1. Explorer tab toggle logic
+    function switchExploreTab(tabName) {
+      // Deactivate all tabs
+      document.querySelectorAll('.explorer-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.remove('active');
+      });
+      
+      // Activate clicked tab button
+      const clickedBtn = Array.from(document.querySelectorAll('.explorer-tab-btn')).find(
+        btn => btn.getAttribute('onclick').includes(tabName)
+      );
+      if (clickedBtn) clickedBtn.classList.add('active');
+      
+      // Activate target pane
+      let targetPaneId = 'tab-team-perf';
+      if (tabName === 'athlete-growth') targetPaneId = 'tab-athlete-growth';
+      else if (tabName === 'scout-recruit') targetPaneId = 'tab-scout-recruit';
+      else if (tabName === 'smart-camera') targetPaneId = 'tab-smart-camera';
+      
+      const pane = document.getElementById(targetPaneId);
+      if (pane) pane.classList.add('active');
+    }
+
+    // 2. Sticky header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('mainHeader');
+      if (header) {
+        if (window.scrollY > 40) {
+          header.classList.add('sticky-scrolled');
+        } else {
+          header.classList.remove('sticky-scrolled');
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
