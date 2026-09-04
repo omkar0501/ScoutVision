@@ -68,3 +68,14 @@ npm run dev
 cd D:\ScoutVision\frontend
 npm run dev
 ```
+
+---
+
+## ☁️ CI/CD & AWS Deployment
+
+This repository includes a production-ready automated **GitHub Actions CI/CD Pipeline** (`.github/workflows/deploy.yml`):
+* **CI**: Validates and builds both `frontend/` (Next.js) and `backend/` (TypeScript) on every pull request or push to `main`.
+* **CD**: Automatically deploys the latest version to an **AWS EC2** instance running Docker Compose without any manual intervention.
+
+👉 For detailed setup and AWS configuration steps, check [AWS_DEPLOYMENT_GUIDE.md](./AWS_DEPLOYMENT_GUIDE.md).
+
