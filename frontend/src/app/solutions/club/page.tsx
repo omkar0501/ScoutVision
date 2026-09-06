@@ -171,7 +171,7 @@ export default function VolleyballClubSolutionPage() {
             <div
               className="absolute inset-0 bg-cover bg-center opacity-25"
               style={{
-                backgroundImage: "url('https://static.hudl.com/craft/sports/volleyball/volleyball_hero.jpg')"
+                backgroundImage: "url('/volleyball_stadium.jpg')"
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-[#191f24] via-[#191f24]/90 to-orange-950/40" />
