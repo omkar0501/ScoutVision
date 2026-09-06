@@ -1,166 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Menu, X, ChevronDown, ArrowRight, Heart } from "lucide-react";
 import Link from "next/link";
-import {
-  Menu,
-  X,
-  ChevronDown,
-  Search,
-  Globe,
-  ArrowRight,
-  Shield,
-  Zap,
-  Target,
-  Users,
-  Award,
-  CheckCircle2,
-  Heart,
-  Video,
-  Monitor,
-  Sparkles,
-  HelpCircle,
-  Building2,
-  Phone,
-  Mail,
-  Play
-} from "lucide-react";
-
-import Solutions from "@/components/Solutions";
-import PlatformFeatures from "@/components/PlatformFeatures";
-import AIAnalytics from "@/components/AIAnalytics";
-import SportsSupported from "@/components/SportsSupported";
-import MembershipPlans from "@/components/MembershipPlans";
-import CustomerTestimonials from "@/components/CustomerTestimonials";
-import FAQ from "@/components/FAQ";
-import Contact from "@/components/Contact";
 
 export default function HomePage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const sampleTeams = [
-    { name: "Lincoln High Eagles", sport: "Soccer", division: "Varsity" },
-    { name: "Pacific State University", sport: "Basketball", division: "NCAA D1" },
-    { name: "London FC Academy", sport: "Soccer", division: "Youth U19" },
-    { name: "Bay Area Volleyball Club", sport: "Volleyball", division: "Club Elite" },
-    { name: "Metro City Football", sport: "American Football", division: "Semi-Pro" }
-  ];
-
-  const filteredTeams = searchQuery
-    ? sampleTeams.filter(
-        (t) =>
-          t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          t.sport.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : sampleTeams;
 
   const menuItems = [
     {
       name: "Solutions",
-      badge: "4 Portals",
-      items: [
-        {
-          title: "By Organization Level",
-          links: [
-            { name: "High School & Athletic Depts", desc: "Operations & roster analysis for school programs.", href: "#solutions" },
-            { name: "Club & Academy Programs", desc: "Automated match capture, team sharing & development.", href: "#solutions" },
-            { name: "Colleges & Universities (D1/D2)", desc: "Deep analytical telemetry on unified cloud platform.", href: "#solutions" },
-            { name: "Professional Franchises", desc: "End-to-end tactical vectors & custom data feeds.", href: "#solutions" }
-          ]
-        },
-        {
-          title: "Specialized Role Portals",
-          links: [
-            { name: "Coach Tactical Portal", desc: "Formation fit, xG metrics & player video clips.", href: "#solutions" },
-            { name: "Analyst Hotkey Workspace", desc: "Rapid video timeline tagging with custom keymaps.", href: "#solutions" },
-            { name: "QA Verification Queue", desc: "Human-in-the-loop accuracy discrepancy audits.", href: "#solutions" },
-            { name: "Team Lead Roster Management", desc: "Subscription licensing, billing & staff assignments.", href: "#solutions" }
-          ]
-        }
+      dropdown: [
+        { name: "High School", href: "/auth/login" },
+        { name: "Club", href: "/auth/login" },
+        { name: "Collegiate", href: "/auth/login" },
+        { name: "Professional", href: "/auth/login" }
       ]
     },
     {
       name: "Products",
-      badge: "AI Powered",
-      items: [
-        {
-          title: "Hardware & Vision Capture",
-          links: [
-            { name: "ScoutVision Focus", desc: "Autonomous 4K smart cameras for stadiums and gyms.", href: "#features" },
-            { name: "ScoutVision Analyst", desc: "Sub-second timeline event tagging & playlist creator.", href: "#features" }
-          ]
-        },
-        {
-          title: "Intelligence & Services",
-          links: [
-            { name: "ScoutVision Assist (QA Service)", desc: "12-hour turnaround certified tagging service.", href: "#features" },
-            { name: "ScoutVision AI Scout", desc: "Real-time YOLOv8 optical tracking & radar telemetry.", href: "#ai-analytics" }
-          ]
-        }
+      dropdown: [
+        { name: "ScoutVision Focus", href: "/auth/login" },
+        { name: "ScoutVision Analyst", href: "/auth/login" },
+        { name: "ScoutVision Assist", href: "/auth/login" }
       ]
     },
     {
       name: "Resources & Support",
-      badge: "Docs & Help",
-      items: [
-        {
-          title: "Knowledge Base",
-          links: [
-            { name: "Technical Documentation", desc: "Video codecs, HLS streaming & API specifications.", href: "#faq" },
-            { name: "Frequently Answered Questions", desc: "Everything regarding security, licensing & SLA.", href: "#faq" }
-          ]
-        },
-        {
-          title: "Engineering Support",
-          links: [
-            { name: "Consult Our Engineers", desc: "Custom stadium setups, RTSP streaming & integrations.", href: "#contact" },
-            { name: "System Telemetry & Status", desc: "99.98% platform uptime & AWS cloud infrastructure.", href: "#contact" }
-          ]
-        }
+      dropdown: [
+        { name: "Support Center", href: "/auth/login" },
+        { name: "Release Notes", href: "/auth/login" }
       ]
     },
     {
       name: "Company",
-      badge: "About Us",
-      items: [
-        {
-          title: "About ScoutVision",
-          links: [
-            { name: "Our Mission & Leadership", desc: "Democratizing elite AI sports intelligence worldwide.", href: "#company" },
-            { name: "40+ Supported Sports", desc: "Soccer, Basketball, Football, Volleyball & more.", href: "#sports" }
-          ]
-        },
-        {
-          title: "Join & Partner",
-          links: [
-            { name: "Pricing & Membership Plans", desc: "Flexible tiers for clubs, schools & enterprises.", href: "#pricing" },
-            { name: "Customer Testimonials", desc: "Trusted by NCAA, academy & club performance coaches.", href: "#testimonials" },
-            { name: "Contact Headquarters", desc: "Direct sales, support & institutional inquiries.", href: "#contact" }
-          ]
-        }
+      dropdown: [
+        { name: "About Us", href: "/auth/login" },
+        { name: "Careers", href: "/auth/login" }
       ]
     }
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#191f24] text-white font-sans antialiased scroll-smooth">
+    <div className="min-h-screen flex flex-col bg-[#191f24] text-white font-sans antialiased">
       
       {/* -------------------- STICKY HEADER CONTAINER -------------------- */}
       <header className="fixed top-0 left-0 right-0 z-50 flex flex-col">
         
-        {/* A. COMPACT NAVIGATION HEADER */}
-        <div className="w-full bg-[#191F24] border-b border-neutral-900 shadow-lg">
-          <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-center justify-between min-h-[58px]">
+        {/* A. COMPACT NAVIGATION HEADER (AT THE VERY TOP) */}
+        <div className="w-full bg-[#191F24] border-b border-neutral-900">
+          <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-center justify-between min-h-[56px]">
             
             {/* Logo segment */}
             <div className="flex items-center gap-8 h-full">
               <Link href="/" className="flex items-center gap-2 group h-full">
+                {/* Premium Eye + Iris Targeting Lens Logo for ScoutVision */}
                 <svg className="w-7 h-7 text-[#ff6300] transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Outer Eye Shape */}
                   <path d="M2 12C2 12 5.5 5 12 5C18.5 5 22 12 22 12C22 12 18.5 19 12 19C5.5 19 2 12 2 12Z" stroke="#ff6300" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                  {/* Inner Lens Iris Circle */}
                   <circle cx="12" cy="12" r="4.2" stroke="white" strokeWidth="2.2" />
+                  {/* Central Target Pupil Dot */}
                   <circle cx="12" cy="12" r="1.5" fill="#ff6300" />
                 </svg>
                 <span className="text-xl font-bold tracking-tight text-white font-sans">
@@ -169,7 +70,7 @@ export default function HomePage() {
               </Link>
 
               {/* Desktop Navigation Links */}
-              <nav className="hidden lg:flex items-center gap-6 h-full mt-1">
+              <nav className="hidden lg:flex items-center gap-6 h-full mt-1.5">
                 {menuItems.map((item) => (
                   <div
                     key={item.name}
@@ -177,38 +78,23 @@ export default function HomePage() {
                     onMouseEnter={() => setActiveDropdown(item.name)}
                     onMouseLeave={() => setActiveDropdown(null)}
                   >
-                    <button className="flex items-center gap-1.5 text-[13px] font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer py-2">
+                    <button className="flex items-center gap-1 text-[13px] font-semibold text-slate-355 hover:text-white transition-colors cursor-pointer py-2">
                       {item.name}
-                      <ChevronDown className="w-3 h-3 text-slate-400 transition-transform group-hover:rotate-180" />
+                      <svg className="w-2.5 h-2.5 text-slate-400 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
                     </button>
 
-                    {/* Rich Megamenu Dropdown */}
                     {activeDropdown === item.name && (
-                      <div className="absolute top-full left-0 mt-1 w-[540px] p-5 rounded-lg bg-[#14191d] border border-neutral-800 shadow-2xl grid grid-cols-2 gap-6 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                        {item.items.map((col, colIdx) => (
-                          <div key={colIdx} className="flex flex-col gap-2.5">
-                            <span className="text-[10px] font-mono font-bold text-orange-500 uppercase tracking-wider border-b border-neutral-800 pb-1.5">
-                              {col.title}
-                            </span>
-                            <div className="flex flex-col gap-2">
-                              {col.links.map((link, lIdx) => (
-                                <a
-                                  key={lIdx}
-                                  href={link.href}
-                                  onClick={() => setActiveDropdown(null)}
-                                  className="group/link p-2 rounded-md hover:bg-neutral-800/70 transition-all text-left block"
-                                >
-                                  <div className="text-xs font-semibold text-white group-hover/link:text-orange-500 transition-colors flex items-center justify-between">
-                                    {link.name}
-                                    <ArrowRight className="w-3 h-3 opacity-0 group-hover/link:opacity-100 transition-opacity text-orange-500" />
-                                  </div>
-                                  <p className="text-[11px] text-slate-400 font-light leading-snug mt-0.5">
-                                    {link.desc}
-                                  </p>
-                                </a>
-                              ))}
-                            </div>
-                          </div>
+                      <div className="absolute top-full left-0 mt-2 w-48 p-2 rounded bg-[#191f24] border border-neutral-800 shadow-xl flex flex-col gap-1">
+                        {item.dropdown.map((sub, sIdx) => (
+                          <Link
+                            key={sIdx}
+                            href={sub.href}
+                            className="text-xs text-slate-355 hover:text-orange-500 transition-colors py-1.5 px-3 rounded hover:bg-neutral-800"
+                          >
+                            {sub.name}
+                          </Link>
                         ))}
                       </div>
                     )}
@@ -218,209 +104,117 @@ export default function HomePage() {
             </div>
 
             {/* Right Header items */}
-            <div className="hidden lg:flex items-center gap-4 h-full mt-1">
+            <div className="hidden lg:flex items-center gap-4.5 h-full mt-1.5">
               
-              {/* Search Trigger */}
-              <button
-                onClick={() => setIsSearchOpen(true)}
-                className="px-4 py-2 border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-900 hover:border-neutral-700 text-[11.5px] text-slate-300 font-medium tracking-wide transition-all flex items-center gap-2 rounded-full cursor-pointer shadow-sm"
-              >
-                <Search className="w-3.5 h-3.5 text-orange-500" />
-                <span>Search Teams & Athletes</span>
+              {/* Globe icon */}
+              <button className="text-slate-300 hover:text-white cursor-pointer px-1 flex items-center justify-center h-full" aria-label="Language Select">
+                <svg className="w-[18px] h-[18px] fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
               </button>
 
-              {/* Log In Dropdown */}
+              {/* Search outline bar */}
+              <Link
+                href="/auth/login"
+                className="px-4 py-2 border border-neutral-800 bg-neutral-900/40 hover:bg-neutral-950 text-[11px] text-slate-300 font-semibold tracking-wide transition-colors flex items-center justify-center"
+                style={{ borderRadius: "500px" }}
+              >
+                Search Teams & Athletes
+              </Link>
+
+              {/* Blue Log In Dropdown */}
               <div className="relative group flex items-center h-full">
                 <Link
                   href="/auth/login"
-                  className="px-5 py-2.5 bg-[#009ce3] hover:bg-[#0082b2] text-white text-[12px] font-bold transition-all flex items-center gap-1.5 rounded-sm shadow-md"
+                  className="px-5 py-2.5 bg-[#009ce3] hover:bg-[#0082b2] text-white text-[11.5px] font-bold transition-all flex items-center gap-1.5"
+                  style={{ borderRadius: "2px" }}
                 >
                   Log In
-                  <ChevronDown className="w-3 h-3 text-white" />
+                  <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
                 </Link>
-                <div className="absolute right-0 top-full mt-1.5 hidden group-hover:flex flex-col bg-[#14191d] border border-neutral-800 rounded-md shadow-2xl py-2 w-48 text-left text-xs z-50">
-                  <div className="px-4 py-1.5 text-[10px] font-mono text-slate-500 uppercase tracking-wider border-b border-neutral-800">
-                    Direct Portals
-                  </div>
-                  <Link href="/auth/login" className="px-4 py-2 hover:bg-neutral-800 text-slate-300 hover:text-white transition-colors">Coach Tactical Portal</Link>
-                  <Link href="/auth/login" className="px-4 py-2 hover:bg-neutral-800 text-slate-300 hover:text-white transition-colors">Analyst Workspace</Link>
-                  <Link href="/auth/login" className="px-4 py-2 hover:bg-neutral-800 text-slate-300 hover:text-white transition-colors">QA Verification Queue</Link>
-                  <div className="h-px bg-neutral-800 my-1" />
-                  <Link href="/dashboard" className="px-4 py-2 hover:bg-orange-500/10 text-orange-500 font-semibold transition-colors flex items-center justify-between">
-                    Live Demo Workspace →
-                  </Link>
+                <div className="absolute right-0 top-full mt-1.5 hidden group-hover:flex flex-col bg-[#191f24] border border-neutral-800 rounded shadow-2xl py-1.5 w-40 text-left text-xs text-slate-355">
+                  <Link href="/auth/login" className="px-4 py-2 hover:bg-neutral-800 hover:text-white">Coach Portal</Link>
+                  <Link href="/auth/login" className="px-4 py-2 hover:bg-neutral-800 hover:text-white">Analyst Portal</Link>
+                  <Link href="/auth/login" className="px-4 py-2 hover:bg-neutral-800 hover:text-white">QA Portal</Link>
                 </div>
               </div>
-
-              {/* Get Started Button */}
-              <Link
-                href="/auth/register"
-                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-[12px] font-bold rounded-sm transition-all shadow-md"
-              >
-                Get Started
-              </Link>
 
             </div>
 
             {/* Mobile menu trigger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-slate-300 hover:text-white cursor-pointer"
+              className="lg:hidden p-1.5 text-slate-300 hover:text-white"
               aria-label="Toggle Navigation"
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMobileMenuOpen ? <X className="w-5.5 h-5.5" /> : <Menu className="w-5.5 h-5.5" />}
             </button>
 
           </div>
         </div>
 
-        {/* B. TOP ANNOUNCEMENT BANNER */}
+        {/* B. TOP BANNER (PLACED UNDER THE BLACK LINE NAV HEADER) */}
         <div
-          className="w-full text-white py-2.5 px-6 md:px-12 relative z-40 flex items-center justify-between border-b border-neutral-900 text-xs shadow-md"
+          className="w-full text-white py-3 px-6 md:px-12 relative z-50 flex items-center justify-between border-b border-neutral-900"
           style={{ background: "linear-gradient(90deg, #a13c06 0%, #0082b2 100%)" }}
         >
-          <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+          <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex-1 text-left">
-              <span className="font-extrabold text-xs md:text-sm mr-2 tracking-tight">
-                ⚡ Enterprise AI Sports Intelligence Live:
+              <span className="font-extrabold text-sm md:text-[15px] block md:inline mr-2 tracking-tight">
+                A faster way to fund your season.
               </span>
-              <span className="font-light text-slate-100 text-[11.5px] md:text-xs">
-                Empowering coaches, analysts, and athletes with real-time video tagging, optical player tracking, and certified QA accuracy.
+              <span className="text-xs md:text-[13px] font-normal text-slate-100">
+                Introducing ScoutVision Fundraising from Team Up. Help fund your season in as little as an hour with a format that's fun for athletes and easy for coaches.
               </span>
             </div>
-            <a
-              href="#solutions"
-              className="px-3.5 py-1.5 bg-white text-neutral-900 hover:bg-slate-100 text-[11px] font-bold rounded-sm shadow transition-colors flex-shrink-0"
+            <Link
+              href="/auth/login"
+              className="px-5 py-2.5 bg-white text-black hover:bg-slate-100 text-xs font-bold rounded-sm shadow transition-colors flex-shrink-0"
             >
-              Explore Solutions →
-            </a>
+              Read more
+            </Link>
           </div>
         </div>
 
       </header>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Nav menu drawer */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-[#14191d] border-t border-neutral-800 py-6 px-6 flex flex-col gap-6 text-white text-sm font-semibold fixed top-[102px] left-0 right-0 bottom-0 z-50 overflow-y-auto shadow-2xl">
+        <div className="lg:hidden bg-[#191f24] border-t border-neutral-800 py-6 px-6 flex flex-col gap-6 text-white text-sm font-semibold absolute top-[56px] left-0 right-0 z-50 max-h-[85vh] overflow-y-auto shadow-2xl">
           {menuItems.map((item) => (
-            <div key={item.name} className="flex flex-col gap-2">
+            <div key={item.name} className="flex flex-col gap-1.5">
               <span className="text-xs font-bold text-orange-500 uppercase tracking-widest">{item.name}</span>
               <div className="flex flex-col gap-2 pl-3">
-                {item.items.flatMap((c) => c.links).map((sub, idx) => (
-                  <a
-                    key={idx}
-                    href={sub.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-xs text-slate-300 hover:text-white py-1"
-                  >
+                {item.dropdown.map((sub, idx) => (
+                  <Link key={idx} href={sub.href} onClick={() => setIsMobileMenuOpen(false)} className="text-slate-300 hover:text-white">
                     {sub.name}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
           ))}
-          <div className="h-px bg-slate-800 my-2" />
+          <div className="h-px bg-slate-800" />
           <div className="flex flex-col gap-3">
-            <button
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                setIsSearchOpen(true);
-              }}
-              className="py-2.5 rounded text-center border border-neutral-700 text-slate-200 text-xs font-semibold"
-            >
+            <Link href="/auth/login" onClick={() => setIsMobileMenuOpen(false)} className="py-2.5 rounded text-center border border-[#ff6300] text-slate-200">
               Search Teams & Athletes
-            </button>
-            <Link
-              href="/auth/login"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="py-2.5 rounded text-center bg-[#009ce3] text-white text-xs font-bold"
-            >
+            </Link>
+            <Link href="/auth/login" onClick={() => setIsMobileMenuOpen(false)} className="py-2.5 rounded text-center bg-[#009ce3] text-white">
               Log In
             </Link>
-            <Link
-              href="/auth/register"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="py-2.5 rounded text-center bg-orange-500 text-white text-xs font-bold"
-            >
-              Get Started Free
-            </Link>
           </div>
         </div>
       )}
 
-      {/* Interactive Search Teams & Athletes Modal */}
-      {isSearchOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#191f24] border border-neutral-800 rounded-xl w-full max-w-lg p-6 shadow-2xl text-left relative">
-            <button
-              onClick={() => setIsSearchOpen(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            
-            <div className="flex items-center gap-2 mb-4">
-              <Search className="w-5 h-5 text-orange-500" />
-              <h3 className="text-lg font-bold text-white">Search Teams, Athletes & Matches</h3>
-            </div>
-
-            <input
-              type="text"
-              placeholder="Search by team, sport, or athlete name (e.g. Lincoln High, Soccer)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-3 bg-[#12161a] border border-neutral-700 rounded-lg text-sm text-white focus:outline-none focus:border-orange-500 transition-colors mb-4"
-              autoFocus
-            />
-
-            <div className="flex flex-col gap-2 max-h-60 overflow-y-auto">
-              {filteredTeams.length > 0 ? (
-                filteredTeams.map((team, idx) => (
-                  <Link
-                    key={idx}
-                    href="/dashboard"
-                    onClick={() => setIsSearchOpen(false)}
-                    className="p-3 rounded-lg bg-[#20272e] hover:bg-[#2a333d] border border-neutral-800 flex items-center justify-between transition-colors group"
-                  >
-                    <div>
-                      <div className="text-sm font-bold text-white group-hover:text-orange-500 transition-colors">
-                        {team.name}
-                      </div>
-                      <div className="text-xs text-slate-400">
-                        {team.sport} • {team.division}
-                      </div>
-                    </div>
-                    <span className="text-xs font-mono text-orange-500 font-semibold">
-                      View Analytics →
-                    </span>
-                  </Link>
-                ))
-              ) : (
-                <div className="text-center py-6 text-slate-400 text-xs">
-                  No matching teams found. Try searching for "Soccer" or "High School".
-                </div>
-              )}
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-neutral-800 flex items-center justify-between text-xs text-slate-400">
-              <span>Looking for match video tagger?</span>
-              <Link
-                href="/dashboard"
-                onClick={() => setIsSearchOpen(false)}
-                className="text-orange-500 font-bold hover:underline"
-              >
-                Open Demo Dashboard →
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* -------------------- MAIN PAGE CONTENT FLOW -------------------- */}
-      <main className="flex-1 mt-[105px]">
+      {/* -------------------- 3. HERO CONTAINER SECTION -------------------- */}
+      <main className="flex-1 mt-[112px]">
         
-        {/* 1. HERO SECTION */}
-        <section className="relative bg-[#191f24] text-white min-h-[85vh] flex items-center overflow-hidden py-16 md:py-24">
+        <section className="relative bg-[#191f24] text-white min-h-[88vh] flex items-center overflow-hidden py-16 md:py-24">
+          
+          {/* Loop Video layer */}
           <div className="absolute inset-0 z-0">
             <video
               className="w-full h-full object-cover opacity-35"
@@ -431,6 +225,7 @@ export default function HomePage() {
               muted
               autoPlay
             />
+            {/* Dotted Grid Overlay to match the Halftone texture on Screenshot 1 */}
             <div
               className="absolute inset-0 pointer-events-none opacity-45 mix-blend-overlay"
               style={{
@@ -438,277 +233,418 @@ export default function HomePage() {
                 backgroundSize: "6px 6px"
               }}
             />
+            {/* Color Overlay: Red/Orange on the left transitioning to blue on the right */}
             <div className="absolute inset-0 bg-gradient-to-r from-[#a13c06]/85 via-[#7a2c04]/70 to-[#0082b2]/85 mix-blend-multiply" />
           </div>
 
           <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            <div className="lg:col-span-7 flex flex-col gap-6 text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40 w-fit">
-                <Sparkles className="w-3.5 h-3.5 text-orange-400" />
-                <span className="text-[11px] font-mono font-bold tracking-wider text-orange-400 uppercase">
-                  Next-Gen Sports Analytics Architecture
-                </span>
-              </div>
-
-              <h1 className="text-4xl md:text-[64px] font-extrabold tracking-tighter leading-[1.0] text-white font-sans">
+            {/* Left Block: Change the Way You See the Game */}
+            <div className="lg:col-span-7 flex flex-col gap-5 text-left">
+              <h1 className="text-4xl md:text-[66px] font-extrabold tracking-tighter leading-[0.98] text-white font-sans">
                 Change the Way<br />
-                You See the Game.
+                You See the Game
               </h1>
               
               <p className="text-sm md:text-base text-slate-100 font-normal leading-relaxed max-w-xl">
-                Powered by autonomous video capture, optical AI telemetry, and certified QA tagging—ScoutVision gives athletic directors, coaches, analysts, and players the ultimate tactical advantage.
+                Powered by video, data and AI—we help millions of athletes, coaches and fans get more out of every moment.
               </p>
               
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Link
-                  href="/auth/register"
-                  className="px-7 py-3.5 rounded bg-[#ff6300] hover:bg-[#e05700] text-white font-bold text-xs inline-flex items-center gap-2 transition-all shadow-lg hover:scale-105"
-                >
-                  Start Free Trial <ArrowRight className="w-4 h-4" />
+              <p className="text-xs md:text-sm text-slate-200">
+                Want ScoutVision for your program?{" "}
+                <Link href="/auth/register" className="underline font-bold text-white hover:text-orange-500">
+                  Talk to our team
                 </Link>
-                <a
-                  href="#solutions"
-                  className="px-6 py-3.5 rounded border border-white/30 bg-white/10 hover:bg-white/20 text-white font-bold text-xs inline-flex items-center gap-2 transition-all backdrop-blur-sm"
+                .
+              </p>
+            </div>
+
+            {/* Right Block: Double CTA Card panels */}
+            <div className="lg:col-span-5 flex flex-col gap-4">
+              
+              {/* Card 1: Coaches and Teams (Orange side border) */}
+              <Link
+                href="/auth/login"
+                className="p-5 rounded bg-[#0b0d0e]/60 hover:bg-[#0b0d0e]/85 border border-neutral-800 border-l-4 border-l-[#ff6300] backdrop-blur-sm transition-all text-left flex flex-col gap-1 cursor-pointer"
+              >
+                <span className="text-[10px] font-mono tracking-wider font-extrabold text-[#ff6300] uppercase block">
+                  FOR COACHES AND TEAMS
+                </span>
+                <span className="text-base font-extrabold text-white block mt-0.5">
+                  Search Team Performance Solutions &gt;
+                </span>
+              </Link>
+
+              {/* Card 2: Fans and Families (Blue side border) */}
+              <Link
+                href="/auth/login"
+                className="p-5 rounded bg-[#0b0d0e]/60 hover:bg-[#0b0d0e]/85 border border-neutral-800 border-l-4 border-l-[#009ce3] backdrop-blur-sm transition-all text-left flex flex-col gap-1 cursor-pointer"
+              >
+                <span className="text-[10px] font-mono tracking-wider font-extrabold text-[#009ce3] uppercase block">
+                  FOR FANS AND FAMILIES
+                </span>
+                <span className="text-base font-extrabold text-white block mt-0.5">
+                  Watch Your Favorite Teams & Athletes &gt;
+                </span>
+              </Link>
+
+            </div>
+
+          </div>
+        </section>
+
+        {/* 4. EXPLORE CARDS GRID SECTION */}
+        <section className="bg-[#191f24] text-white py-16 border-t border-[#2d3748]/20">
+          <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            {/* Card 1 - Capture Every Moment */}
+            <div className="flex flex-col justify-between bg-[#232a31] rounded-sm overflow-hidden border border-[#2d3748]/50 min-h-[360px] p-6">
+              <div>
+                <div
+                  className="h-36 bg-cover bg-center rounded-sm mb-6"
+                  style={{ backgroundImage: `url('https://static.hudl.com/craft/_600xAUTO_crop_center-center_none/170304/homepage-focus.jpg?mtime=20220822151739')` }}
+                />
+                <h2 className="text-xl font-bold text-white mb-2 leading-tight">
+                  Capture Every Moment
+                </h2>
+                <p className="text-xs text-slate-400 leading-relaxed font-light">
+                  Our hands-free cameras use AI for livestreams, performance analysis and more.
+                </p>
+              </div>
+              <Link href="/auth/login" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
+                Explore Focus Cameras →
+              </Link>
+            </div>
+
+            {/* Card 2 - See Your Sport Differently */}
+            <div className="flex flex-col justify-between bg-[#232a31] rounded-sm overflow-hidden border border-[#2d3748]/50 min-h-[360px] p-6">
+              <div>
+                <div
+                  className="h-36 bg-cover bg-center rounded-sm mb-6"
+                  style={{ backgroundImage: `url('https://static.hudl.com/craft/home/_600xAUTO_crop_center-center_none/home-see-sports-differently.jpg?mtime=20240221130854')` }}
+                />
+                <h2 className="text-xl font-bold text-white mb-2 leading-tight">
+                  See Your Sport Differently
+                </h2>
+                <p className="text-xs text-slate-400 leading-relaxed font-light">
+                  With AI-powered video and data, ScoutVision delivers deeper insights for athletes and coaches at every level.
+                </p>
+              </div>
+              <Link href="/auth/login" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
+                Find Your Sport →
+              </Link>
+            </div>
+
+            {/* Card 3 - Watch Live Games */}
+            <div className="flex flex-col justify-between bg-[#232a31] rounded-sm overflow-hidden border border-[#2d3748]/50 min-h-[360px] p-6">
+              <div>
+                <div
+                  className="h-36 bg-cover bg-center rounded-sm mb-6"
+                  style={{ backgroundImage: `url('https://static.hudl.com/craft/home/_600xAUTO_crop_center-center_none/home-watch-live-games.jpg?mtime=20240221130850')` }}
+                />
+                <h2 className="text-xl font-bold text-white mb-2 leading-tight">
+                  Watch Live Games and Highlights
+                </h2>
+                <p className="text-xs text-slate-400 leading-relaxed font-light">
+                  Your favorite athletes and teams are all on ScoutVision — from livestreams to can't-miss moments.
+                </p>
+              </div>
+              <Link href="/auth/login" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
+                Launch Fan Experience →
+              </Link>
+            </div>
+
+            {/* Card 4 - Explore the Platform */}
+            <div className="flex flex-col justify-between bg-[#232a31] rounded-sm overflow-hidden border border-[#2d3748]/50 min-h-[360px] p-6">
+              <div>
+                <div
+                  className="h-36 bg-cover bg-center rounded-sm mb-6"
+                  style={{ backgroundImage: `url('https://static.hudl.com/craft/home/_600xAUTO_crop_center-center_none/home-explore-the-platform.jpg?mtime=20240221130848')` }}
+                />
+                <h2 className="text-xl font-bold text-white mb-2 leading-tight">
+                  Explore the Platform
+                </h2>
+                <p className="text-xs text-slate-400 leading-relaxed font-light">
+                  Everything an athlete or a team needs to reach their potential is here. And we bring it all together.
+                </p>
+              </div>
+              <Link href="/auth/login" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
+                View All Products →
+              </Link>
+            </div>
+
+          </div>
+        </section>
+
+        {/* 5. PERFORMANCE DEVICES SECTION */}
+        <section className="bg-slate-50 text-[#191f24] py-20 border-t border-neutral-200">
+          <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+            {/* Left Content */}
+            <div className="flex flex-col gap-6 text-left">
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-900 leading-tight">
+                The Trusted Sports Technology Platform for Performance
+              </h2>
+              <p className="text-slate-600 text-base leading-relaxed font-light max-w-xl">
+                Video, AI insights and deep analytical experience come together to deliver insights anyone can use. This is how ScoutVision runs organizations at every level of sport.
+              </p>
+              <div className="mt-2">
+                <Link
+                  href="/auth/login"
+                  className="px-6 py-3 rounded bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs inline-flex items-center gap-1 transition-colors"
                 >
-                  Explore Solutions
+                  Explore Performance Solutions →
+                </Link>
+              </div>
+            </div>
+
+            {/* Right live image */}
+            <div className="relative rounded border border-neutral-200 overflow-hidden shadow-md bg-white">
+              <img
+                alt="An assortment of ScoutVision devices, cameras and analysis screens"
+                src="https://static.hudl.com/craft/homepage-competitive-products_updated.jpg?mtime=20220822155247"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+
+          </div>
+        </section>
+
+        {/* 6. FAN ENGAGEMENT SECTION */}
+        <section className="bg-white text-[#191f24] py-20 border-t border-neutral-200">
+          <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+            {/* Left live image */}
+            <div className="order-2 lg:order-1 relative rounded border border-neutral-200 overflow-hidden shadow-md bg-white">
+              <img
+                alt="A laptop, a tablet, and a phone showing examples of team profiles and highlights"
+                src="https://static.hudl.com/craft/adp_fan_engagement_v2.jpg?mtime=20230801134006"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+
+            {/* Right content */}
+            <div className="order-1 lg:order-2 flex flex-col gap-6 text-left">
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-900 leading-tight">
+                Connect With Athletes, Teams and Communities
+              </h2>
+              <p className="text-slate-600 text-base leading-relaxed font-light max-w-xl">
+                Looking to follow your favorite athlete or team? Whether it's scores, schedules, stats, livestreams or anything in between… it's on ScoutVision.
+              </p>
+              <div className="mt-2">
+                <a
+                  href="/auth/login"
+                  className="px-6 py-3 rounded bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs inline-flex items-center gap-1 transition-colors"
+                >
+                  Search Teams & Athletes →
                 </a>
               </div>
             </div>
 
-            <div className="lg:col-span-5 flex flex-col gap-4">
-              <a
-                href="#solutions"
-                className="p-5 rounded-lg bg-[#0b0d0e]/70 hover:bg-[#0b0d0e]/90 border border-neutral-800 border-l-4 border-l-[#ff6300] backdrop-blur-md transition-all text-left flex flex-col gap-1 cursor-pointer group shadow-xl"
-              >
-                <span className="text-[10px] font-mono tracking-wider font-extrabold text-[#ff6300] uppercase block">
-                  FOR COACHES & ANALYSTS
-                </span>
-                <span className="text-base font-extrabold text-white group-hover:text-orange-400 transition-colors block mt-0.5">
-                  Launch Tactical Performance Portals &gt;
-                </span>
-                <span className="text-xs text-slate-400 font-light">
-                  Explore player radar, formation fits, and xG analytics.
-                </span>
-              </a>
+          </div>
+        </section>
 
-              <a
-                href="#features"
-                className="p-5 rounded-lg bg-[#0b0d0e]/70 hover:bg-[#0b0d0e]/90 border border-neutral-800 border-l-4 border-l-[#009ce3] backdrop-blur-md transition-all text-left flex flex-col gap-1 cursor-pointer group shadow-xl"
-              >
-                <span className="text-[10px] font-mono tracking-wider font-extrabold text-[#009ce3] uppercase block">
-                  PRODUCTS & HARDWARE
-                </span>
-                <span className="text-base font-extrabold text-white group-hover:text-blue-400 transition-colors block mt-0.5">
-                  ScoutVision Focus 4K Smart Camera &gt;
-                </span>
-                <span className="text-xs text-slate-400 font-light">
-                  Hands-free panoramic auto-tracking for gyms & stadiums.
-                </span>
-              </a>
-            </div>
+        {/* 7. BRAND PROMISE SECTION */}
+        <section className="bg-[#191f24] text-white py-24 text-center relative overflow-hidden">
+          <div className="max-w-4xl mx-auto px-6 relative z-10 flex flex-col gap-6 items-center">
+            
+            <h3 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight max-w-3xl text-balance">
+              We believe in sports. And teams believe in ScoutVision.
+            </h3>
+            
+            <p className="text-slate-300 text-base md:text-lg font-light leading-relaxed max-w-2xl mt-4">
+              We're here to help athletes, coaches, teams and programs grow every day by giving them easy access to the right information. That's why millions, across 40 sports, trust ScoutVision to maximize their potential.
+            </p>
 
           </div>
         </section>
 
-        {/* 2. SOLUTIONS SECTION (#solutions) */}
-        <section id="solutions" className="scroll-mt-24">
-          <Solutions />
-        </section>
-
-        {/* 3. PRODUCTS SECTION (#features) */}
-        <section id="features" className="scroll-mt-24">
-          <PlatformFeatures />
-        </section>
-
-        {/* 4. AI ANALYTICS & TELEMETRY (#ai-analytics) */}
-        <section id="ai-analytics" className="scroll-mt-24">
-          <AIAnalytics />
-        </section>
-
-        {/* 5. MULTI-SPORT COVERAGE (#sports) */}
-        <section id="sports" className="scroll-mt-24">
-          <SportsSupported />
-        </section>
-
-        {/* 6. DEDICATED COMPANY SECTION (#company) */}
-        <section id="company" className="py-24 bg-[#14191d] border-t border-neutral-800 text-white scroll-mt-24">
+        {/* 8. BLOG / STORIES / NEWS SECTION */}
+        <section className="bg-slate-50 text-[#191f24] py-20 border-t border-neutral-200">
           <div className="max-w-7xl mx-auto px-6">
             
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="text-xs font-mono font-bold tracking-widest text-orange-500 uppercase">
-                ABOUT SCOUTVISION
-              </span>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mt-3 mb-6">
-                Engineering the Future of Sports Intelligence
-              </h2>
-              <p className="text-slate-400 text-base md:text-lg font-light leading-relaxed">
-                Founded by sports technologists, video engineers, and machine learning researchers, ScoutVision bridges the gap between raw match footage and game-winning tactical decisions.
-              </p>
+            <div className="text-left mb-12">
+              <h3 className="text-3xl font-bold text-neutral-900 font-display">
+                How ScoutVision changes the game.
+              </h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-              <div className="p-8 rounded-xl bg-[#191f24] border border-neutral-800 text-left flex flex-col gap-4 shadow-lg hover:border-orange-500/40 transition-colors">
-                <div className="w-12 h-12 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500">
-                  <Zap className="w-6 h-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              
+              {/* Story 1 */}
+              <div className="bg-white rounded border border-neutral-200 p-6 flex flex-col justify-between min-h-[220px] hover:border-orange-500/50 transition-colors">
+                <div>
+                  <h4 className="text-sm font-bold text-neutral-900 mb-4 leading-snug">
+                    ScoutVision Focus Point—A Coaching Catalyst for Valor Christian
+                  </h4>
                 </div>
-                <h3 className="text-xl font-bold text-white">Sub-Second Processing</h3>
-                <p className="text-xs text-slate-400 leading-relaxed font-light">
-                  Our GPU-accelerated pipelines ingest high-bitrate video streams and extract player coordinates at 60 FPS in real-time, eliminating hours of manual review.
-                </p>
+                <span className="text-[10px] font-mono text-slate-400 block tracking-widest uppercase">
+                  Jun 27 / 2025
+                </span>
               </div>
 
-              <div className="p-8 rounded-xl bg-[#191f24] border border-neutral-800 text-left flex flex-col gap-4 shadow-lg hover:border-blue-500/40 transition-colors">
-                <div className="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-[#009ce3]">
-                  <Shield className="w-6 h-6" />
+              {/* Story 2 */}
+              <div className="bg-white rounded border border-neutral-200 p-6 flex flex-col justify-between min-h-[220px] hover:border-orange-500/50 transition-colors">
+                <div>
+                  <h4 className="text-sm font-bold text-neutral-900 mb-4 leading-snug">
+                    How AI Is Transforming Volleyball Coaching & Analysis
+                  </h4>
                 </div>
-                <h3 className="text-xl font-bold text-white">Human QA Guarantee</h3>
-                <p className="text-xs text-slate-400 leading-relaxed font-light">
-                  AI generates the foundation; our certified sports analysts verify every ambiguous tag. Coaches receive clean, trustworthy, audit-ready performance datasets.
-                </p>
+                <span className="text-[10px] font-mono text-slate-400 block tracking-widest uppercase">
+                  Jul 28 / 2025
+                </span>
               </div>
 
-              <div className="p-8 rounded-xl bg-[#191f24] border border-neutral-800 text-left flex flex-col gap-4 shadow-lg hover:border-amber-500/40 transition-colors">
-                <div className="w-12 h-12 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
-                  <Building2 className="w-6 h-6" />
+              {/* Story 3 */}
+              <div className="bg-white rounded border border-neutral-200 p-6 flex flex-col justify-between min-h-[220px] hover:border-orange-500/50 transition-colors">
+                <div>
+                  <h4 className="text-sm font-bold text-neutral-900 mb-4 leading-snug">
+                    Fulham FC Selects ScoutVision to be Official Player Performance Insights Partner
+                  </h4>
                 </div>
-                <h3 className="text-xl font-bold text-white">Institutional Scalability</h3>
-                <p className="text-xs text-slate-400 leading-relaxed font-light">
-                  From high school athletic conferences to top-flight professional academies, our multi-tenant cloud architecture supports unlimited teams with bank-grade security.
-                </p>
+                <span className="text-[10px] font-mono text-slate-400 block tracking-widest uppercase">
+                  May 20 / 2025
+                </span>
               </div>
-            </div>
 
-            {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 rounded-xl bg-[#1d242a] border border-neutral-800 text-center">
-              <div>
-                <div className="text-3xl md:text-4xl font-extrabold text-orange-500 font-mono">40+</div>
-                <div className="text-xs text-slate-400 mt-1 uppercase font-semibold">Sports Disciplines</div>
+              {/* Story 4 */}
+              <div className="bg-white rounded border border-neutral-200 p-6 flex flex-col justify-between min-h-[220px] hover:border-orange-500/50 transition-colors">
+                <div>
+                  <h4 className="text-sm font-bold text-neutral-900 mb-4 leading-snug">
+                    Titan GPS + ScoutVision: Bringing Physical Performance Data to Teams at Every Level
+                  </h4>
+                </div>
+                <span className="text-[10px] font-mono text-slate-400 block tracking-widest uppercase">
+                  Jun 3 / 2025
+                </span>
               </div>
-              <div>
-                <div className="text-3xl md:text-4xl font-extrabold text-white font-mono">&lt; 12 hrs</div>
-                <div className="text-xs text-slate-400 mt-1 uppercase font-semibold">QA Tag Turnaround</div>
-              </div>
-              <div>
-                <div className="text-3xl md:text-4xl font-extrabold text-[#009ce3] font-mono">99.98%</div>
-                <div className="text-xs text-slate-400 mt-1 uppercase font-semibold">Platform Uptime</div>
-              </div>
-              <div>
-                <div className="text-3xl md:text-4xl font-extrabold text-amber-400 font-mono">10,000+</div>
-                <div className="text-xs text-slate-400 mt-1 uppercase font-semibold">Matches Analyzed</div>
-              </div>
+
             </div>
 
           </div>
         </section>
 
-        {/* 7. PRICING & MEMBERSHIP (#pricing) */}
-        <section id="pricing" className="scroll-mt-24">
-          <MembershipPlans />
-        </section>
+        {/* 9. FINAL CTA IN ACTION SECTION */}
+        <section className="bg-white text-[#191f24] py-20 text-center border-t border-neutral-200">
+          <div className="max-w-3xl mx-auto px-6 flex flex-col gap-6 items-center">
+            
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-900 leading-none">
+              See ScoutVision in action.
+            </h2>
+            
+            <div className="mt-4">
+              <Link
+                href="/auth/register"
+                className="px-8 py-3.5 rounded bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs inline-flex items-center gap-1.5 transition-colors shadow-md"
+              >
+                Get Started
+              </Link>
+            </div>
 
-        {/* 8. TESTIMONIALS (#testimonials) */}
-        <section id="testimonials" className="scroll-mt-24">
-          <CustomerTestimonials />
-        </section>
-
-        {/* 9. FAQ / RESOURCES (#faq) */}
-        <section id="faq" className="scroll-mt-24">
-          <FAQ />
-        </section>
-
-        {/* 10. CONTACT & CONSULTATION (#contact) */}
-        <section id="contact" className="scroll-mt-24">
-          <Contact />
+          </div>
         </section>
 
       </main>
 
-      {/* -------------------- FOOTER -------------------- */}
-      <footer className="bg-[#14191d] border-t border-neutral-800 text-[#a0aec0] py-16 text-left">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-12">
+      {/* -------------------- FOOTER (HUDL EXACT COPY LINKS REBRANDED) -------------------- */}
+      <footer className="bg-[#191f24] border-t border-[#2d3748]/30 text-[#a0aec0] py-16">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12 text-left">
           
-          {/* Brand Info */}
-          <div className="col-span-2 lg:col-span-1 flex flex-col gap-4">
-            <Link href="/" className="flex items-center gap-2">
-              <svg className="w-6 h-6 text-[#ff6300]" viewBox="0 0 24 24" fill="none">
-                <path d="M2 12C2 12 5.5 5 12 5C18.5 5 22 12 22 12C22 12 18.5 19 12 19C5.5 19 2 12 2 12Z" stroke="#ff6300" strokeWidth="2.2" />
-                <circle cx="12" cy="12" r="4.2" stroke="white" strokeWidth="2.2" />
-                <circle cx="12" cy="12" r="1.5" fill="#ff6300" />
-              </svg>
-              <span className="text-lg font-bold text-white tracking-tight">
-                Scout<span className="text-[#ff6300]">Vision</span>
-              </span>
-            </Link>
-            <p className="text-xs text-slate-400 font-light leading-relaxed">
-              Enterprise AI sports intelligence, autonomous 4K stadium capture, and precision video performance telemetry.
-            </p>
-            <div className="text-xs text-slate-400 flex flex-col gap-1">
-              <span>support@scoutvision.ai</span>
-              <span>+1 (800) 555-SCOUT</span>
-            </div>
-          </div>
-
-          {/* Solutions */}
-          <div className="flex flex-col gap-3">
+          {/* Solutions Column */}
+          <div className="flex flex-col gap-4">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Solutions</h4>
             <nav className="flex flex-col gap-2 text-xs">
-              <a href="#solutions" className="hover:text-orange-500 transition-colors">High School</a>
-              <a href="#solutions" className="hover:text-orange-500 transition-colors">Club & Academies</a>
-              <a href="#solutions" className="hover:text-orange-500 transition-colors">Collegiate Programs</a>
-              <a href="#solutions" className="hover:text-orange-500 transition-colors">Professional Teams</a>
-              <a href="#solutions" className="hover:text-orange-500 transition-colors">Coach Portal</a>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">High School</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Club</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Collegiate</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Division I Colleges</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Fan Engagement</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Operations</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Youth Football</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Professional</Link>
             </nav>
           </div>
 
-          {/* Products */}
-          <div className="flex flex-col gap-3">
+          {/* Products Column */}
+          <div className="flex flex-col gap-4">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Products</h4>
             <nav className="flex flex-col gap-2 text-xs">
-              <a href="#features" className="hover:text-orange-500 transition-colors">ScoutVision Focus (4K)</a>
-              <a href="#features" className="hover:text-orange-500 transition-colors">ScoutVision Analyst</a>
-              <a href="#features" className="hover:text-orange-500 transition-colors">ScoutVision Assist (QA)</a>
-              <a href="#ai-analytics" className="hover:text-orange-500 transition-colors">Optical Tracking</a>
-              <a href="#ai-analytics" className="hover:text-orange-500 transition-colors">xG & Spacing Radar</a>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">ScoutVision Focus</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">ScoutVision Analyst</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">ScoutVision Assist</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">ScoutVision Recruit</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Statsbomb</Link>
             </nav>
           </div>
 
-          {/* Resources */}
-          <div className="flex flex-col gap-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Resources</h4>
+          {/* Athletes and Fans Column */}
+          <div className="flex flex-col gap-4">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Athletes and Fans</h4>
             <nav className="flex flex-col gap-2 text-xs">
-              <a href="#faq" className="hover:text-orange-500 transition-colors">Frequently Answered Questions</a>
-              <a href="#faq" className="hover:text-orange-500 transition-colors">Security & Compliance</a>
-              <a href="#faq" className="hover:text-orange-500 transition-colors">Video Codecs & HLS</a>
-              <a href="#sports" className="hover:text-orange-500 transition-colors">Supported Sports</a>
-              <a href="#pricing" className="hover:text-orange-500 transition-colors">Membership Pricing</a>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">ScoutVision Highlights</Link>
             </nav>
           </div>
 
-          {/* Company & Portals */}
-          <div className="flex flex-col gap-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Company & Portals</h4>
+          {/* About Column */}
+          <div className="flex flex-col gap-4">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">About</h4>
             <nav className="flex flex-col gap-2 text-xs">
-              <a href="#company" className="hover:text-orange-500 transition-colors">About Us</a>
-              <a href="#testimonials" className="hover:text-orange-500 transition-colors">Client Testimonials</a>
-              <a href="#contact" className="hover:text-orange-500 transition-colors">Contact Sales</a>
-              <Link href="/auth/login" className="text-orange-500 font-semibold hover:underline">Log In</Link>
-              <Link href="/dashboard" className="text-[#009ce3] font-semibold hover:underline">Demo Dashboard</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Advertise</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Press</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Company News</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Careers</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Events</Link>
+            </nav>
+          </div>
+
+          {/* Contact Us Column */}
+          <div className="flex flex-col gap-4">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Contact Us</h4>
+            <nav className="flex flex-col gap-2 text-xs">
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Support</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Blog</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Pay by Credit Card</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Accessories Store</Link>
+            </nav>
+          </div>
+
+          {/* Login / Sales Column */}
+          <div className="flex flex-col gap-4">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Logins</h4>
+            <nav className="flex flex-col gap-2 text-xs">
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Login</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Contact Sales</Link>
             </nav>
           </div>
 
         </div>
 
         <div className="max-w-7xl mx-auto px-6">
-          <div className="h-px bg-neutral-800 mb-6" />
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-            <div>
-              © {new Date().getFullYear()} ScoutVision Technologies, Inc. All rights reserved.
+          <div className="h-px bg-slate-800 mb-8" />
+          
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] text-slate-500 font-light text-center md:text-left">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+              <Link href="/auth/login" className="hover:underline">Privacy Policy</Link>
+              <span>|</span>
+              <Link href="/auth/login" className="hover:underline">Terms & Conditions</Link>
+              <span>|</span>
+              <Link href="/auth/login" className="hover:underline">Software License Agreement</Link>
+              <span>|</span>
+              <Link href="/auth/login" className="hover:underline">Do Not Sell My Info</Link>
+              <span>|</span>
+              <Link href="/auth/login" className="hover:underline">Cookies</Link>
+              <span>|</span>
+              <Link href="/auth/login" className="hover:underline">Security</Link>
             </div>
-            <div className="flex items-center gap-1">
-              Made with <Heart className="w-3.5 h-3.5 text-orange-500 fill-orange-500" /> for elite athletic performance.
+            
+            <div className="flex items-center gap-4">
+              <span>© {new Date().getFullYear()} ScoutVision, Inc. All rights reserved.</span>
+              <span className="flex items-center gap-1">
+                Made with <Heart className="w-3.5 h-3.5 text-orange-500 fill-orange-500" /> for performance.
+              </span>
             </div>
           </div>
+
         </div>
       </footer>
 
