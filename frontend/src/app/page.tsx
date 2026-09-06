@@ -348,7 +348,7 @@ export default function HomePage() {
               <div>
                 <div
                   className="h-36 bg-cover bg-center rounded-sm mb-6"
-                  style={{ backgroundImage: `url('https://static.hudl.com/craft/home/_600xAUTO_crop_center-center_none/home-watch-live-games.jpg?mtime=20240221130850')` }}
+                  style={{ backgroundImage: `url('/scoutvision_live_games.png')` }}
                 />
                 <h2 className="text-xl font-bold text-white mb-2 leading-tight">
                   Watch Live Games and Highlights
@@ -426,7 +426,7 @@ export default function HomePage() {
             <div className="order-2 lg:order-1 relative rounded border border-neutral-200 overflow-hidden shadow-md bg-white">
               <img
                 alt="A laptop, a tablet, and a phone showing examples of team profiles and highlights"
-                src="https://static.hudl.com/craft/adp_fan_engagement_v2.jpg?mtime=20230801134006"
+                src="/scoutvision_fan_engagement.png"
                 className="w-full h-auto object-cover"
               />
             </div>
