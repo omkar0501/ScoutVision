@@ -136,8 +136,8 @@ export default function VolleyballClubSolutionPage() {
               <Link href="/" className="text-xs font-semibold text-slate-300 hover:text-white transition-colors">
                 All Solutions
               </Link>
-              <Link href="/" className="text-xs font-semibold text-slate-300 hover:text-white transition-colors">
-                Products
+              <Link href="/products/volleymetrics" className="text-xs font-semibold text-slate-300 hover:text-orange-400 transition-colors">
+                Volleymetrics
               </Link>
               <Link href="/dashboard" className="text-xs font-semibold text-slate-300 hover:text-white transition-colors">
                 Demo Platform

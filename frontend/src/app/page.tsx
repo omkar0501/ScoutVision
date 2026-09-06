@@ -21,7 +21,9 @@ export default function HomePage() {
     },
     {
       name: "Products",
+      href: "/products/volleymetrics",
       dropdown: [
+        { name: "ScoutVision Volleymetrics", href: "/products/volleymetrics" },
         { name: "ScoutVision Focus", href: "/auth/login" },
         { name: "ScoutVision Analyst", href: "/auth/login" },
         { name: "ScoutVision Assist", href: "/auth/login" }
