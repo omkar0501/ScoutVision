@@ -310,7 +310,7 @@ export default function HomePage() {
               <div>
                 <div
                   className="h-36 bg-cover bg-center rounded-sm mb-6"
-                  style={{ backgroundImage: `url('/volleyball_stadium.jpg')` }}
+                  style={{ backgroundImage: `url('https://static.hudl.com/craft/_600xAUTO_crop_center-center_none/170304/homepage-focus.jpg?mtime=20220822151739')` }}
                 />
                 <h2 className="text-xl font-bold text-white mb-2 leading-tight">
                   Capture Every Moment
@@ -329,7 +329,7 @@ export default function HomePage() {
               <div>
                 <div
                   className="h-36 bg-cover bg-center rounded-sm mb-6"
-                  style={{ backgroundImage: `url('/volleyball_spike.jpg')` }}
+                  style={{ backgroundImage: `url('https://static.hudl.com/craft/home/_600xAUTO_crop_center-center_none/home-see-sports-differently.jpg?mtime=20240221130854')` }}
                 />
                 <h2 className="text-xl font-bold text-white mb-2 leading-tight">
                   See Your Sport Differently
@@ -348,7 +348,7 @@ export default function HomePage() {
               <div>
                 <div
                   className="h-36 bg-cover bg-center rounded-sm mb-6"
-                  style={{ backgroundImage: `url('/volleyball_court.jpg')` }}
+                  style={{ backgroundImage: `url('https://static.hudl.com/craft/home/_600xAUTO_crop_center-center_none/home-watch-live-games.jpg?mtime=20240221130850')` }}
                 />
                 <h2 className="text-xl font-bold text-white mb-2 leading-tight">
                   Watch Live Games and Highlights
@@ -367,7 +367,7 @@ export default function HomePage() {
               <div>
                 <div
                   className="h-36 bg-cover bg-center rounded-sm mb-6"
-                  style={{ backgroundImage: `url('/volleyball_stadium.jpg')` }}
+                  style={{ backgroundImage: `url('https://static.hudl.com/craft/home/_600xAUTO_crop_center-center_none/home-explore-the-platform.jpg?mtime=20240221130848')` }}
                 />
                 <h2 className="text-xl font-bold text-white mb-2 leading-tight">
                   Explore the Platform
@@ -406,42 +406,13 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Custom ScoutVision High-Performance Telemetry UI Mockup */}
-            <div className="relative rounded-xl border border-neutral-800 overflow-hidden shadow-2xl bg-[#14191d] p-6 text-left">
-              <div className="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#ff6300] animate-pulse" />
-                  <span className="text-xs font-bold text-white font-mono uppercase tracking-wider">ScoutVision Focus 4K Ingestion</span>
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/30">60 FPS UHD</span>
-              </div>
-              
-              <div className="relative rounded-lg overflow-hidden h-52 bg-cover bg-center mb-4 border border-neutral-800" style={{ backgroundImage: "url('/volleyball_court.jpg')" }}>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
-                <div className="absolute top-3 left-3 flex gap-2">
-                  <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-[10px] font-mono text-white font-bold">CAM-01: COURT HIGH REAR</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/80 text-[10px] font-mono text-white font-bold">AUTO-TRACK ACTIVE</span>
-                </div>
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-white">
-                  <span className="font-bold drop-shadow">Eagles Volleyball vs Metro Club</span>
-                  <span className="font-mono text-orange-400 drop-shadow">R4 • 21-19 (Set 3)</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3 text-center">
-                <div className="p-2.5 rounded bg-[#191f24] border border-neutral-800">
-                  <span className="text-[10px] text-slate-400 block font-mono">Ball Speed</span>
-                  <span className="text-sm font-extrabold text-white">88 km/h</span>
-                </div>
-                <div className="p-2.5 rounded bg-[#191f24] border border-neutral-800">
-                  <span className="text-[10px] text-slate-400 block font-mono">Spike Height</span>
-                  <span className="text-sm font-extrabold text-orange-400">2.94 m</span>
-                </div>
-                <div className="p-2.5 rounded bg-[#191f24] border border-neutral-800">
-                  <span className="text-[10px] text-slate-400 block font-mono">Passing (0-3)</span>
-                  <span className="text-sm font-extrabold text-emerald-400">2.68 Rating</span>
-                </div>
-              </div>
+            {/* Right live image */}
+            <div className="relative rounded border border-neutral-200 overflow-hidden shadow-md bg-white">
+              <img
+                alt="An assortment of ScoutVision devices, cameras and analysis screens"
+                src="https://static.hudl.com/craft/homepage-competitive-products_updated.jpg?mtime=20220822155247"
+                className="w-full h-auto object-cover"
+              />
             </div>
 
           </div>
@@ -451,61 +422,13 @@ export default function HomePage() {
         <section className="bg-white text-[#191f24] py-20 border-t border-neutral-200">
           <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             
-            {/* Left: Custom ScoutVision Athletic Portal UI Mockup (100% Rebranded) */}
-            <div className="order-2 lg:order-1 relative rounded-xl border border-neutral-800 overflow-hidden shadow-2xl bg-[#14191d] p-6 text-left">
-              {/* Laptop device top bar */}
-              <div className="flex items-center justify-between border-b border-neutral-800 pb-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                  <span className="text-xs font-bold text-white font-mono ml-2">SCOUTVISION ATHLETIC PORTAL</span>
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-800 text-slate-300">scoutvision.cybix.live</span>
-              </div>
-
-              {/* Header inside device */}
-              <div className="p-4 rounded-lg bg-gradient-to-r from-[#a13c06]/90 to-[#0082b2]/90 text-white mb-4 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-orange-200 block">CLUB & HIGH SCHOOL CENTRAL</span>
-                  <h3 className="text-lg font-extrabold">Eagles Volleyball Academy</h3>
-                </div>
-                <span className="px-3 py-1 rounded bg-white/20 backdrop-blur-md text-xs font-bold">18-National Open</span>
-              </div>
-
-              {/* Athlete spotlight card inside mockup */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                <div className="p-3.5 rounded-lg bg-[#191f24] border border-neutral-800 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-bold text-white text-sm">
-                    MS
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-white">Megan Smith #7</div>
-                    <div className="text-[10px] text-slate-400">Outside Hitter • Class of 2026</div>
-                    <div className="text-[10px] font-mono text-emerald-400 mt-0.5">24 Kills • .385 Hitting %</div>
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-lg bg-[#191f24] border border-neutral-800 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#009ce3] flex items-center justify-center font-bold text-white text-sm">
-                    AR
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-white">Alex Rivera #12</div>
-                    <div className="text-[10px] text-slate-400">Setter • 38 Assists / Match</div>
-                    <div className="text-[10px] font-mono text-orange-400 mt-0.5">92% In-System Pass Conversion</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Match Highlights preview bar */}
-              <div className="p-3 rounded-lg bg-[#191f24] border border-neutral-800 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <span className="w-2 h-2 rounded-full bg-green-400" />
-                  <span>State Championship Highlights Reel</span>
-                </div>
-                <span className="text-[11px] text-orange-500 font-bold">Watch Video &gt;</span>
-              </div>
+            {/* Left live image */}
+            <div className="order-2 lg:order-1 relative rounded border border-neutral-200 overflow-hidden shadow-md bg-white">
+              <img
+                alt="A laptop, a tablet, and a phone showing examples of team profiles and highlights"
+                src="https://static.hudl.com/craft/adp_fan_engagement_v2.jpg?mtime=20230801134006"
+                className="w-full h-auto object-cover"
+              />
             </div>
 
             {/* Right content */}
@@ -631,7 +554,7 @@ export default function HomePage() {
 
       </main>
 
-      {/* -------------------- FOOTER (SCOUTVISION PLATFORM NAVIGATION) -------------------- */}
+      {/* -------------------- FOOTER (HUDL EXACT COPY LINKS REBRANDED) -------------------- */}
       <footer className="bg-[#191f24] border-t border-[#2d3748]/30 text-[#a0aec0] py-16">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12 text-left">
           
