@@ -13,7 +13,7 @@ export default function HomePage() {
       name: "Solutions",
       dropdown: [
         { name: "High School", href: "/auth/login" },
-        { name: "Club", href: "/auth/login" },
+        { name: "Club", href: "/solutions/club" },
         { name: "Collegiate", href: "/auth/login" },
         { name: "Professional", href: "/auth/login" }
       ]
@@ -555,7 +555,7 @@ export default function HomePage() {
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Solutions</h4>
             <nav className="flex flex-col gap-2 text-xs">
               <Link href="/auth/login" className="hover:text-orange-500 transition-colors">High School</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Club</Link>
+              <Link href="/solutions/club" className="hover:text-orange-500 transition-colors">Club</Link>
               <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Collegiate</Link>
               <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Division I Colleges</Link>
               <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Fan Engagement</Link>
