@@ -11,11 +11,12 @@ export default function HomePage() {
   const menuItems = [
     {
       name: "Solutions",
+      href: "/solutions/club",
       dropdown: [
-        { name: "High School", href: "/auth/login" },
-        { name: "Club", href: "/solutions/club" },
-        { name: "Collegiate", href: "/auth/login" },
-        { name: "Professional", href: "/auth/login" }
+        { name: "Club (Volleyball)", href: "/solutions/club" },
+        { name: "High School", href: "/solutions/club" },
+        { name: "Collegiate", href: "/solutions/club" },
+        { name: "Professional", href: "/solutions/club" }
       ]
     },
     {
@@ -74,28 +75,35 @@ export default function HomePage() {
                 {menuItems.map((item) => (
                   <div
                     key={item.name}
-                    className="relative"
+                    className="relative group/menu py-2"
                     onMouseEnter={() => setActiveDropdown(item.name)}
                     onMouseLeave={() => setActiveDropdown(null)}
                   >
-                    <button className="flex items-center gap-1 text-[13px] font-semibold text-slate-355 hover:text-white transition-colors cursor-pointer py-2">
+                    <Link
+                      href={item.href || (item.name === "Solutions" ? "/solutions/club" : "#")}
+                      className="flex items-center gap-1.5 text-[13px] font-semibold text-slate-300 hover:text-orange-400 transition-colors cursor-pointer"
+                    >
                       {item.name}
-                      <svg className="w-2.5 h-2.5 text-slate-400 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                      <svg className={`w-2.5 h-2.5 text-slate-400 mt-0.5 transition-transform duration-150 ${activeDropdown === item.name ? "rotate-180 text-orange-400" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                         <path d="M6 9l6 6 6-6" />
                       </svg>
-                    </button>
+                    </Link>
 
                     {activeDropdown === item.name && (
-                      <div className="absolute top-full left-0 mt-2 w-48 p-2 rounded bg-[#191f24] border border-neutral-800 shadow-xl flex flex-col gap-1">
-                        {item.dropdown.map((sub, sIdx) => (
-                          <Link
-                            key={sIdx}
-                            href={sub.href}
-                            className="text-xs text-slate-355 hover:text-orange-500 transition-colors py-1.5 px-3 rounded hover:bg-neutral-800"
-                          >
-                            {sub.name}
-                          </Link>
-                        ))}
+                      <div className="absolute top-full left-0 pt-1 z-[100]">
+                        <div className="w-52 p-2 rounded-lg bg-[#1e252b] border border-neutral-700 shadow-2xl flex flex-col gap-1 backdrop-blur-md animate-in fade-in slide-in-from-top-1 duration-150">
+                          {item.dropdown.map((sub, sIdx) => (
+                            <Link
+                              key={sIdx}
+                              href={sub.href}
+                              onClick={() => setActiveDropdown(null)}
+                              className="text-xs font-medium text-slate-200 hover:text-orange-400 hover:bg-[#28323b] transition-all py-2 px-3 rounded flex items-center justify-between"
+                            >
+                              <span>{sub.name}</span>
+                              <span className="text-[10px] text-orange-400 opacity-0 group-hover:opacity-100">→</span>
+                            </Link>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -136,7 +144,7 @@ export default function HomePage() {
                     <path d="M6 9l6 6 6-6" />
                   </svg>
                 </Link>
-                <div className="absolute right-0 top-full mt-1.5 hidden group-hover:flex flex-col bg-[#191f24] border border-neutral-800 rounded shadow-2xl py-1.5 w-40 text-left text-xs text-slate-355">
+                <div className="absolute right-0 top-full mt-1.5 hidden group-hover:flex flex-col bg-[#1e252b] border border-neutral-700 rounded-lg shadow-2xl py-2 w-48 text-left text-xs text-slate-200 z-[100] backdrop-blur-md">
                   <Link href="/auth/login" className="px-4 py-2 hover:bg-neutral-800 hover:text-white">Coach Portal</Link>
                   <Link href="/auth/login" className="px-4 py-2 hover:bg-neutral-800 hover:text-white">Analyst Portal</Link>
                   <Link href="/auth/login" className="px-4 py-2 hover:bg-neutral-800 hover:text-white">QA Portal</Link>
@@ -159,7 +167,7 @@ export default function HomePage() {
 
         {/* B. TOP BANNER (PLACED UNDER THE BLACK LINE NAV HEADER) */}
         <div
-          className="w-full text-white py-3 px-6 md:px-12 relative z-50 flex items-center justify-between border-b border-neutral-900"
+          className="w-full text-white py-3 px-6 md:px-12 relative z-20 flex items-center justify-between border-b border-neutral-900"
           style={{ background: "linear-gradient(90deg, #a13c06 0%, #0082b2 100%)" }}
         >
           <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
