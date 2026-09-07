@@ -9,7 +9,7 @@ interface ScoutVisionLogoProps {
 
 export default function ScoutVisionLogo({
   className = "",
-  iconSize = 32,
+  iconSize = 40,
   showText = true,
   textSize = "text-xl"
 }: ScoutVisionLogoProps) {

@@ -122,7 +122,7 @@ export default function VolleyballClubSolutionPage() {
               <img
                   src="/logos/scoutvision_icon.png"
                   alt="ScoutVision Logo"
-                  className="w-8 h-8 object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_8px_rgba(255,99,0,0.4)]"
+                  className="w-10 h-10 object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_12px_rgba(255,99,0,0.6)]"
                 />
               <span className="text-xl font-bold tracking-tight text-white">
                 Scout<span className="text-[#ff6300]">Vision</span>
