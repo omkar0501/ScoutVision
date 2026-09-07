@@ -119,11 +119,11 @@ export default function VolleyballClubSolutionPage() {
           
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2 group">
-              <svg className="w-7 h-7 text-[#ff6300] transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="none">
-                <path d="M2 12C2 12 5.5 5 12 5C18.5 5 22 12 22 12C22 12 18.5 19 12 19C5.5 19 2 12 2 12Z" stroke="#ff6300" strokeWidth="2.2" />
-                <circle cx="12" cy="12" r="4.2" stroke="white" strokeWidth="2.2" />
-                <circle cx="12" cy="12" r="1.5" fill="#ff6300" />
-              </svg>
+              <img
+                  src="/logos/scoutvision_icon.png"
+                  alt="ScoutVision Logo"
+                  className="w-8 h-8 object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_8px_rgba(255,99,0,0.4)]"
+                />
               <span className="text-xl font-bold tracking-tight text-white">
                 Scout<span className="text-[#ff6300]">Vision</span>
               </span>

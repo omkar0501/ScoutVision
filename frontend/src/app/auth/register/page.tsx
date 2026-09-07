@@ -123,11 +123,11 @@ export default function RegisterPage() {
 
       {/* Brand logo header */}
       <Link href="/" className="flex items-center gap-2 mb-6 group z-10">
-        <svg className="w-7 h-7 text-[#0070f3] group-hover:scale-105 transition-transform" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2 12C2 12 5.5 5 12 5C18.5 5 22 12 22 12C22 12 18.5 19 12 19C5.5 19 2 12 2 12Z" stroke="#0070f3" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx="12" cy="12" r="4.2" stroke="white" strokeWidth="2.2" />
-          <circle cx="12" cy="12" r="1.5" fill="#0070f3" />
-        </svg>
+        <img
+                src="/logos/scoutvision_icon.png"
+                alt="ScoutVision Logo"
+                className="w-14 h-14 object-contain transition-transform group-hover:scale-105 mb-2 drop-shadow-[0_0_12px_rgba(255,99,0,0.5)]"
+              />
         <span className="text-lg font-bold tracking-tight text-white">
           Scout<span className="text-[#0070f3]">Vision</span>
         </span>

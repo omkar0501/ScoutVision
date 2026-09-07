@@ -202,11 +202,11 @@ export default function VolleymetricsProductPage() {
             {/* Logo */}
             <div className="flex items-center gap-8 h-full">
               <Link href="/" className="flex items-center gap-2 group h-full">
-                <svg className="w-7 h-7 text-[#ff6300] transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2 12C2 12 5.5 5 12 5C18.5 5 22 12 22 12C22 12 18.5 19 12 19C5.5 19 2 12 2 12Z" stroke="#ff6300" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="12" cy="12" r="4.2" stroke="white" strokeWidth="2.2" />
-                  <circle cx="12" cy="12" r="1.5" fill="#ff6300" />
-                </svg>
+                <img
+                  src="/logos/scoutvision_icon.png"
+                  alt="ScoutVision Logo"
+                  className="w-8 h-8 object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_8px_rgba(255,99,0,0.4)]"
+                />
                 <span className="text-xl font-bold tracking-tight text-white font-sans">
                   Scout<span className="text-[#ff6300]">Vision</span>
                 </span>
@@ -1122,11 +1122,11 @@ export default function VolleymetricsProductPage() {
             
             <div className="col-span-2 space-y-4">
               <div className="flex items-center gap-2">
-                <svg className="w-6 h-6 text-[#ff6300]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2 12C2 12 5.5 5 12 5C18.5 5 22 12 22 12C22 12 18.5 19 12 19C5.5 19 2 12 2 12Z" stroke="#ff6300" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="12" cy="12" r="4" stroke="white" strokeWidth="2" />
-                  <circle cx="12" cy="12" r="1.5" fill="#ff6300" />
-                </svg>
+                <img
+                  src="/logos/scoutvision_icon.png"
+                  alt="ScoutVision Logo"
+                  className="w-8 h-8 object-contain transition-transform group-hover:scale-105 drop-shadow-[0_0_8px_rgba(255,99,0,0.4)]"
+                />
                 <span className="text-lg font-bold text-white tracking-tight">
                   Scout<span className="text-[#ff6300]">Vision</span> Volleymetrics
                 </span>

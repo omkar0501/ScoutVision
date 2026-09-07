@@ -12,6 +12,11 @@ const geistMono = {
 };
 
 export const metadata: Metadata = {
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/logos/scoutvision_icon.png',
+    apple: '/logos/scoutvision_icon.png',
+  },
   title: "ScoutVision | Enterprise AI Sports Analytics SaaS",
   description: "High-frequency match tagging, optical player tracking heatmaps, custom performance dashboards, and collaborative workflows for elite coaches and analysts.",
 };
