@@ -133,8 +133,8 @@ export default function VolleyballClubSolutionPage() {
               <Link href="/solutions/club" className="text-xs font-semibold text-orange-500 py-1 border-b-2 border-orange-500">
                 Club Volleyball
               </Link>
-              <Link href="/" className="text-xs font-semibold text-slate-300 hover:text-white transition-colors">
-                All Solutions
+              <Link href="/solutions/high-school" className="text-xs font-semibold text-slate-300 hover:text-[#ff6300] transition-colors">
+                High School
               </Link>
               <Link href="/products/volleymetrics" className="text-xs font-semibold text-slate-300 hover:text-orange-400 transition-colors">
                 Volleymetrics

@@ -14,7 +14,7 @@ export default function HomePage() {
       href: "/solutions/club",
       dropdown: [
         { name: "Club (Volleyball)", href: "/solutions/club" },
-        { name: "High School", href: "/solutions/club" },
+        { name: "High School", href: "/solutions/high-school" },
         { name: "Collegiate", href: "/solutions/club" },
         { name: "Professional", href: "/solutions/club" }
       ]

@@ -58,7 +58,7 @@ export default function VolleymetricsProductPage() {
       href: "/solutions/club",
       dropdown: [
         { name: "Club (Volleyball)", href: "/solutions/club" },
-        { name: "High School", href: "/solutions/club" },
+        { name: "High School", href: "/solutions/high-school" },
         { name: "Collegiate", href: "/solutions/club" },
         { name: "Professional", href: "/solutions/club" }
       ]
@@ -1143,7 +1143,7 @@ export default function VolleymetricsProductPage() {
               <div className="font-bold text-white uppercase tracking-wider mb-3 text-[11px]">Solutions</div>
               <ul className="space-y-2">
                 <li><Link href="/solutions/club" className="hover:text-orange-400 transition-colors">Club Volleyball</Link></li>
-                <li><Link href="/solutions/club" className="hover:text-orange-400 transition-colors">High School Teams</Link></li>
+                <li><Link href="/solutions/high-school" className="hover:text-orange-400 transition-colors">High School Teams</Link></li>
                 <li><Link href="/solutions/club" className="hover:text-orange-400 transition-colors">Collegiate Programs</Link></li>
                 <li><Link href="/solutions/club" className="hover:text-orange-400 transition-colors">National Teams</Link></li>
               </ul>
