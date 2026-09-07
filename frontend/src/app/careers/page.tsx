@@ -490,8 +490,26 @@ export default function CareersPage() {
                 </p>
 
                 <form 
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
+                    const form = e.currentTarget;
+                    const formDataObj = new FormData(form);
+                    try {
+                      await fetch("/api/send-email", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          to: "contact.scoutvision@gmail.com",
+                          subject: `[Job Application] ${selectedJob?.title || 'General Roster'}: ${form.fullName?.value || 'Applicant'}`,
+                          name: form.fullName?.value,
+                          email: form.emailAddr?.value,
+                          phone: form.phoneNum?.value,
+                          location: form.locationCity?.value,
+                          organization: `Position: ${selectedJob?.title || 'General'} (${selectedJob?.dept || 'Roster'})`,
+                          message: `LinkedIn/Portfolio: ${form.portfolioUrl?.value || 'N/A'}\n\nCover / Notes: ${form.notes?.value || 'N/A'}`
+                        })
+                      });
+                    } catch {}
                     setFormSubmitted(true);
                   }}
                   className="space-y-4 text-xs"
@@ -502,7 +520,7 @@ export default function CareersPage() {
                       <input 
                         type="text" 
                         required 
-                        placeholder="Alex Sharma" 
+                        name="fullName" placeholder="Alex Sharma" 
                         className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]"
                       />
                     </div>
@@ -511,7 +529,7 @@ export default function CareersPage() {
                       <input 
                         type="email" 
                         required 
-                        placeholder="alex@example.com" 
+                        name="emailAddr" placeholder="alex@example.com" 
                         className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]"
                       />
                     </div>
@@ -523,7 +541,7 @@ export default function CareersPage() {
                       <input 
                         type="tel" 
                         required 
-                        placeholder="+91 98765 43210" 
+                        name="phoneNum" placeholder="+91 98765 43210" 
                         className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]"
                       />
                     </div>
@@ -532,7 +550,7 @@ export default function CareersPage() {
                       <input 
                         type="text" 
                         required 
-                        placeholder="Pune / Remote" 
+                        name="locationCity" placeholder="Pune / Remote" 
                         className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]"
                       />
                     </div>
@@ -543,7 +561,7 @@ export default function CareersPage() {
                     <input 
                       type="url" 
                       required 
-                      placeholder="https://linkedin.com/in/username or github.com" 
+                      name="portfolioUrl" placeholder="https://linkedin.com/in/username or github.com" 
                       className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]"
                     />
                   </div>
@@ -552,7 +570,7 @@ export default function CareersPage() {
                     <label className="block text-slate-300 mb-1">Why do you want to build ScoutVision?</label>
                     <textarea 
                       rows={3} 
-                      placeholder="Tell us about your background in computer vision, sports, or engineering..."
+                      name="notes" placeholder="Tell us about your background in computer vision, sports, or engineering..."
                       className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]"
                     ></textarea>
                   </div>

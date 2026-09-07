@@ -926,8 +926,25 @@ export default function HighSchoolSolutionPage() {
                 </p>
 
                 <form 
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
+                    const form = e.currentTarget;
+                    try {
+                      await fetch("/api/send-email", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          to: "contact.scoutvision@gmail.com",
+                          subject: `[High School Proposal] ${form.schoolName?.value || 'School'}: ${form.fullName?.value || 'Director'}`,
+                          name: form.fullName?.value,
+                          email: form.workEmail?.value,
+                          phone: form.phoneNum?.value,
+                          role: form.userRole?.value,
+                          organization: form.schoolName?.value,
+                          message: `Role: ${form.userRole?.value || 'N/A'}\nSchool: ${form.schoolName?.value || 'N/A'}\nSport: ${form.sportInterest?.value || 'N/A'}`
+                        })
+                      });
+                    } catch {}
                     setFormSubmitted(true);
                   }}
                   className="space-y-4 text-xs"
@@ -938,13 +955,13 @@ export default function HighSchoolSolutionPage() {
                       <input 
                         type="text" 
                         required 
-                        placeholder="Coach Smith" 
+                        name="fullName" placeholder="Coach Smith" 
                         className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]"
                       />
                     </div>
                     <div>
                       <label className="block text-slate-300 mb-1">Your Role *</label>
-                      <select className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]">
+                      <select name="userRole" className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]">
                         <option>Athletic Director</option>
                         <option>Head Coach</option>
                         <option>Assistant Coach</option>
@@ -959,7 +976,7 @@ export default function HighSchoolSolutionPage() {
                     <input 
                       type="text" 
                       required 
-                      placeholder="Lincoln High School" 
+                      name="schoolName" placeholder="Lincoln High School" 
                       className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]"
                     />
                   </div>
@@ -970,7 +987,7 @@ export default function HighSchoolSolutionPage() {
                       <input 
                         type="email" 
                         required 
-                        placeholder="ad@lincolnhs.edu" 
+                        name="workEmail" placeholder="ad@lincolnhs.edu" 
                         className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]"
                       />
                     </div>
@@ -978,7 +995,7 @@ export default function HighSchoolSolutionPage() {
                       <label className="block text-slate-300 mb-1">Phone Number</label>
                       <input 
                         type="tel" 
-                        placeholder="(555) 000-0000" 
+                        name="phoneNum" placeholder="+91 98765 43210" 
                         className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]"
                       />
                     </div>
@@ -986,7 +1003,7 @@ export default function HighSchoolSolutionPage() {
 
                   <div>
                     <label className="block text-slate-300 mb-1">Primary Sport of Interest</label>
-                    <select className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]">
+                    <select name="sportInterest" className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-[#ff6300]">
                       <option>All-School Department (All Sports)</option>
                       <option>Volleyball</option>
                       <option>Basketball</option>

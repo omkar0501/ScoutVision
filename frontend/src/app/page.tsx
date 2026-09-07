@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ContactModal from "@/components/ContactModal";
 import { Menu, X, ChevronDown, ArrowRight, Heart } from "lucide-react";
 import Link from "next/link";
 
 export default function HomePage() {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
@@ -32,14 +34,16 @@ export default function HomePage() {
     {
       name: "Resources & Support",
       dropdown: [
-        { name: "Support Center", href: "/auth/login" },
-        { name: "Release Notes", href: "/auth/login" }
+        { name: "Contact Support", href: "/contact" },
+        { name: "Support Center", href: "/contact" },
+        { name: "Release Notes", href: "/about" }
       ]
     },
     {
       name: "Company",
       dropdown: [
         { name: "About Us", href: "/about" },
+        { name: "Contact Us", href: "/contact" },
         { name: "Careers", href: "/careers" }
       ]
     }
@@ -258,9 +262,12 @@ export default function HomePage() {
               
               <p className="text-xs md:text-sm text-slate-200">
                 Want ScoutVision for your program?{" "}
-                <Link href="/auth/register" className="underline font-bold text-white hover:text-orange-500">
+                <button 
+                  onClick={() => setIsContactModalOpen(true)}
+                  className="underline font-bold text-white hover:text-[#ff6300] cursor-pointer transition-colors"
+                >
                   Talk to our team
-                </Link>
+                </button>
                 .
               </p>
             </div>
@@ -616,7 +623,13 @@ export default function HomePage() {
                 <span>Magarpatta City, Hadapsar</span><br />
                 <span>Pune, Maharashtra 411028, India</span>
               </div>
-              <Link href="/about" className="hover:text-orange-500 transition-colors pt-1">Support & Operations</Link>
+              <button 
+                onClick={() => setIsContactModalOpen(true)}
+                className="text-left text-[#ff6300] font-semibold hover:underline flex items-center gap-1 pt-1"
+              >
+                <span>💬 Open Inquiry Form</span>
+              </button>
+              <Link href="/contact" className="hover:text-orange-500 transition-colors">Full Contact Page</Link>
             </nav>
           </div>
 
@@ -660,6 +673,8 @@ export default function HomePage() {
         </div>
       </footer>
 
+    
+      <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
     </div>
   );
 }
