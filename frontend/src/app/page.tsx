@@ -39,7 +39,7 @@ export default function HomePage() {
     {
       name: "Company",
       dropdown: [
-        { name: "About Us", href: "/auth/login" },
+        { name: "About Us", href: "/about" },
         { name: "Careers", href: "/auth/login" }
       ]
     }
@@ -595,11 +595,11 @@ export default function HomePage() {
           <div className="flex flex-col gap-4">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">About</h4>
             <nav className="flex flex-col gap-2 text-xs">
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Advertise</Link>
+              <Link href="/about" className="hover:text-orange-500 transition-colors">About Us</Link>
+              <Link href="/solutions/high-school" className="hover:text-orange-500 transition-colors">High School Solutions</Link>
               <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Press</Link>
               <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Company News</Link>
               <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Careers</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Events</Link>
             </nav>
           </div>
 
