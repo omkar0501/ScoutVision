@@ -524,8 +524,10 @@ export default function VolleyballClubSolutionPage() {
             <span className="font-bold text-white">ScoutVision Volleyball</span>
             <span>• The Intelligent Video Standard for Club Volleyball</span>
           </div>
-          <div>
-            © {new Date().getFullYear()} ScoutVision Technologies, Inc. All rights reserved.
+          <div className="text-right space-y-0.5">
+            <div>📍 Magarpatta City, Hadapsar, Pune, Maharashtra 411028, India</div>
+            <div>✉️ <a href="mailto:contact.scoutvision@gmail.com" className="text-orange-400 hover:underline">contact.scoutvision@gmail.com</a></div>
+            <div className="text-[10px] text-slate-500">© {new Date().getFullYear()} ScoutVision Technologies, Inc. All rights reserved.</div>
           </div>
         </div>
       </footer>

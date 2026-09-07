@@ -44,7 +44,7 @@ export default function CareersPage() {
   const perks = [
     {
       title: "Work From Anywhere",
-      desc: "Flexible remote-first culture with vibrant tech hubs in Pune, Mumbai, and global remote opportunities.",
+      desc: "Flexible remote-first culture with vibrant tech hubs in Pune (Magarpatta City HQ), and global remote opportunities.",
       icon: Laptop
     },
     {
@@ -79,7 +79,7 @@ export default function CareersPage() {
       id: "cv-engineer",
       title: "Senior Computer Vision / Deep Learning Engineer",
       dept: "Engineering",
-      location: "Hybrid / Remote (Pune / Mumbai)",
+      location: "Hybrid / Remote (Pune (Magarpatta City HQ))",
       type: "Full-Time",
       experience: "4+ years",
       desc: "Architect and deploy real-time ball trajectory estimation, player pose detection, and court homography models on edge smart cameras and cloud video pipelines.",
@@ -610,8 +610,16 @@ export default function CareersPage() {
             <p className="text-slate-400 max-w-sm leading-relaxed">
               Empowering coaches, athletic directors, and athletes with intelligent automated video analytics, verified stats, and seamless live broadcasting.
             </p>
-            <div className="text-[11px] text-slate-500 pt-2">
-              © {new Date().getFullYear()} ScoutVision Technology, Inc. All rights reserved.
+            <div className="text-[11px] text-slate-400 pt-2 space-y-1">
+              <div className="flex items-center gap-1.5 text-slate-300">
+                <span>📍</span>
+                <span>Magarpatta City, Hadapsar, Pune, Maharashtra 411028, India</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span>✉️</span>
+                <a href="mailto:contact.scoutvision@gmail.com" className="text-[#ff6300] hover:underline">contact.scoutvision@gmail.com</a>
+              </div>
+              <div className="text-slate-500 pt-1">© {new Date().getFullYear()} ScoutVision Technology, Inc. All rights reserved.</div>
             </div>
           </div>
 
@@ -641,7 +649,7 @@ export default function CareersPage() {
               <li><a href="https://www.linkedin.com/company/scoutvision-technology" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1">LinkedIn <ExternalLink className="w-3 h-3 text-[#ff6300]" /></a></li>
               <li><Link href="/auth/login" className="hover:text-white transition-colors">Coach Sign In</Link></li>
               <li><Link href="/auth/register" className="hover:text-white transition-colors">Create Free Account</Link></li>
-              <li><a href="mailto:careers@scoutvision.live" className="hover:text-white transition-colors">careers@scoutvision.live</a></li>
+              <li><a href="mailto:contact.scoutvision@gmail.com" className="hover:text-white transition-colors">contact.scoutvision@gmail.com</a></li>
             </ul>
           </div>
 

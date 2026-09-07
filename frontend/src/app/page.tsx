@@ -607,10 +607,16 @@ export default function HomePage() {
           <div className="flex flex-col gap-4">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Contact Us</h4>
             <nav className="flex flex-col gap-2 text-xs">
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Support</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Blog</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Pay by Credit Card</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Accessories Store</Link>
+              <a href="mailto:contact.scoutvision@gmail.com" className="hover:text-orange-500 transition-colors text-white font-medium flex items-center gap-1.5">
+                <span>✉️</span>
+                <span>contact.scoutvision@gmail.com</span>
+              </a>
+              <div className="text-slate-400 leading-relaxed pt-1">
+                <span className="text-white block font-medium">📍 Headquarters:</span>
+                <span>Magarpatta City, Hadapsar</span><br />
+                <span>Pune, Maharashtra 411028, India</span>
+              </div>
+              <Link href="/about" className="hover:text-orange-500 transition-colors pt-1">Support & Operations</Link>
             </nav>
           </div>
 

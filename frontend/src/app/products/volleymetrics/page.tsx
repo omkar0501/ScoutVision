@@ -155,7 +155,7 @@ export default function VolleymetricsProductPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          to: "omkarjadhav5010@gmail.com",
+          to: "contact.scoutvision@gmail.com",
           subject: `New Volleymetrics Demo Request: ${formData.organization}`,
           text: `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nOrg: ${formData.organization}\nRole: ${formData.role}\nLevel: ${formData.level}\nMessage: ${formData.message}`
         })

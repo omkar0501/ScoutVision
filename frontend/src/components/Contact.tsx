@@ -54,8 +54,8 @@ export default function Contact() {
                     <span className="text-[10px] font-mono text-slate-500 block tracking-widest uppercase mb-0.5">
                       Direct Email
                     </span>
-                    <a href="mailto:solutions@scoutvision.ai" className="text-sm font-semibold text-neutral-900 hover:text-orange-500 transition-colors">
-                      solutions@scoutvision.ai
+                    <a href="mailto:contact.scoutvision@gmail.com" className="text-sm font-semibold text-neutral-900 hover:text-orange-500 transition-colors">
+                      contact.scoutvision@gmail.com
                     </a>
                   </div>
                 </div>
@@ -83,8 +83,8 @@ export default function Contact() {
                       Headquarters
                     </span>
                     <span className="text-sm font-semibold text-neutral-900 leading-relaxed">
-                      100 Sports Science Parkway, Suite 400<br />
-                      Palo Alto, CA 94301
+                      Magarpatta City, Hadapsar<br />
+                      Pune, Maharashtra 411028, India
                     </span>
                   </div>
                 </div>

@@ -62,6 +62,10 @@ export default function Footer() {
           <p className="text-sm font-light leading-relaxed max-w-sm">
             ScoutVision is an enterprise Sports Analytics SaaS platform. We deliver real-time tagging, AI-driven player tracking, and robust validation tools to professional coaching teams globally.
           </p>
+          <div className="text-xs text-slate-400 space-y-1">
+            <div className="text-slate-300">📍 Magarpatta City, Hadapsar, Pune, Maharashtra 411028, India</div>
+            <div>✉️ <a href="mailto:contact.scoutvision@gmail.com" className="text-orange-500 hover:underline">contact.scoutvision@gmail.com</a></div>
+          </div>
 
           {/* Social Icons */}
           <div className="flex items-center gap-4">

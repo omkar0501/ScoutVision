@@ -445,8 +445,16 @@ export default function AboutPage() {
             <p className="text-slate-400 max-w-sm leading-relaxed">
               Empowering coaches, athletic directors, and athletes with intelligent automated video analytics, verified stats, and seamless live broadcasting.
             </p>
-            <div className="text-[11px] text-slate-500 pt-2">
-              © {new Date().getFullYear()} ScoutVision Technology, Inc. All rights reserved.
+            <div className="text-[11px] text-slate-400 pt-2 space-y-1">
+              <div className="flex items-center gap-1.5 text-slate-300">
+                <span>📍</span>
+                <span>Magarpatta City, Hadapsar, Pune, Maharashtra 411028, India</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span>✉️</span>
+                <a href="mailto:contact.scoutvision@gmail.com" className="text-[#ff6300] hover:underline">contact.scoutvision@gmail.com</a>
+              </div>
+              <div className="text-slate-500 pt-1">© {new Date().getFullYear()} ScoutVision Technology, Inc. All rights reserved.</div>
             </div>
           </div>
 
@@ -476,7 +484,7 @@ export default function AboutPage() {
               <li><Link href="/auth/login" className="hover:text-white transition-colors">Coach Sign In</Link></li>
               <li><Link href="/auth/register" className="hover:text-white transition-colors">Create Free Account</Link></li>
               <li><Link href="/auth/forgot-password" className="hover:text-white transition-colors">Reset Password</Link></li>
-              <li><a href="mailto:support@scoutvision.live" className="hover:text-white transition-colors">Contact Support</a></li>
+              <li><a href="mailto:contact.scoutvision@gmail.com" className="hover:text-white transition-colors">Contact Support</a></li>
             </ul>
           </div>
 
