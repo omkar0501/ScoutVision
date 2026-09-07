@@ -68,16 +68,16 @@ export default function VolleymetricsProductPage() {
       href: "/products/volleymetrics",
       dropdown: [
         { name: "ScoutVision Volleymetrics", href: "/products/volleymetrics" },
-        { name: "ScoutVision Focus Camera", href: "/auth/login" },
-        { name: "ScoutVision Assist Tagging", href: "/auth/login" }
+        { name: "ScoutVision Focus Camera", href: "/products/focus" },
+        { name: "ScoutVision Assist Tagging", href: "/products/assist" }
       ]
     },
     {
       name: "Resources & Support",
       dropdown: [
-        { name: "Support Center", href: "/auth/login" },
-        { name: "Tutorials & Guides", href: "/auth/login" },
-        { name: "Release Notes", href: "/auth/login" }
+        { name: "Support Center", href: "/contact" },
+        { name: "Tutorials & Guides", href: "/products/volleymetrics" },
+        { name: "Release Notes", href: "/about#milestones" }
       ]
     },
     {
@@ -1153,19 +1153,19 @@ export default function VolleymetricsProductPage() {
               <div className="font-bold text-white uppercase tracking-wider mb-3 text-[11px]">Products</div>
               <ul className="space-y-2">
                 <li><Link href="/products/volleymetrics" className="text-orange-400 font-semibold">Volleymetrics Pro</Link></li>
-                <li><Link href="/auth/login" className="hover:text-orange-400 transition-colors">Smart Focus Camera</Link></li>
-                <li><Link href="/auth/login" className="hover:text-orange-400 transition-colors">Assist Tagging Service</Link></li>
-                <li><Link href="/auth/login" className="hover:text-orange-400 transition-colors">League Exchange</Link></li>
+                <li><Link href="/products/focus" className="hover:text-orange-400 transition-colors">Smart Focus Camera</Link></li>
+                <li><Link href="/products/assist" className="hover:text-orange-400 transition-colors">Assist Tagging Service</Link></li>
+                <li><Link href="/solutions/collegiate" className="hover:text-orange-400 transition-colors">League Exchange</Link></li>
               </ul>
             </div>
 
             <div>
               <div className="font-bold text-white uppercase tracking-wider mb-3 text-[11px]">Support & Legal</div>
               <ul className="space-y-2">
-                <li><Link href="/auth/login" className="hover:text-orange-400 transition-colors">Knowledge Base</Link></li>
-                <li><Link href="/auth/login" className="hover:text-orange-400 transition-colors">Camera Tutorials</Link></li>
-                <li><Link href="/auth/login" className="hover:text-orange-400 transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/auth/login" className="hover:text-orange-400 transition-colors">Terms of Service</Link></li>
+                <li><Link href="/contact" className="hover:text-orange-400 transition-colors">Knowledge Base</Link></li>
+                <li><Link href="/products/focus" className="hover:text-orange-400 transition-colors">Camera Tutorials</Link></li>
+                <li><Link href="/privacy" className="hover:text-orange-400 transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-orange-400 transition-colors">Terms of Service</Link></li>
               </ul>
             </div>
 
@@ -1176,9 +1176,9 @@ export default function VolleymetricsProductPage() {
               &copy; {new Date().getFullYear()} ScoutVision Inc. All rights reserved. Dedicated to Volleyball Excellence.
             </div>
             <div className="flex items-center gap-6">
-              <Link href="#" className="hover:text-neutral-400">Privacy</Link>
-              <Link href="#" className="hover:text-neutral-400">Security</Link>
-              <Link href="#" className="hover:text-neutral-400">Cookies</Link>
+              <Link href="/privacy" className="hover:text-neutral-400">Privacy</Link>
+              <Link href="/privacy#security" className="hover:text-neutral-400">Security</Link>
+              <Link href="/privacy#cookies" className="hover:text-neutral-400">Cookies</Link>
             </div>
           </div>
 

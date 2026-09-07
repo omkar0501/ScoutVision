@@ -17,8 +17,8 @@ export default function HomePage() {
       dropdown: [
         { name: "Club (Volleyball)", href: "/solutions/club" },
         { name: "High School", href: "/solutions/high-school" },
-        { name: "Collegiate", href: "/solutions/club" },
-        { name: "Professional", href: "/solutions/club" }
+        { name: "Collegiate", href: "/solutions/collegiate" },
+        { name: "Professional", href: "/solutions/professional" }
       ]
     },
     {
@@ -26,9 +26,9 @@ export default function HomePage() {
       href: "/products/volleymetrics",
       dropdown: [
         { name: "ScoutVision Volleymetrics", href: "/products/volleymetrics" },
-        { name: "ScoutVision Focus", href: "/auth/login" },
-        { name: "ScoutVision Analyst", href: "/auth/login" },
-        { name: "ScoutVision Assist", href: "/auth/login" }
+        { name: "ScoutVision Focus", href: "/products/focus" },
+        { name: "ScoutVision Analyst", href: "/products/analyst" },
+        { name: "ScoutVision Assist", href: "/products/assist" }
       ]
     },
     {
@@ -36,7 +36,8 @@ export default function HomePage() {
       dropdown: [
         { name: "Contact Support", href: "/contact" },
         { name: "Support Center", href: "/contact" },
-        { name: "Release Notes", href: "/about" }
+        { name: "Documentation", href: "/products/volleymetrics" },
+        { name: "Release Notes", href: "/about#milestones" }
       ]
     },
     {
@@ -44,7 +45,7 @@ export default function HomePage() {
       dropdown: [
         { name: "About Us", href: "/about" },
         { name: "Contact Us", href: "/contact" },
-        { name: "Careers", href: "/careers" }
+        { name: "Careers & Jobs", href: "/careers" }
       ]
     }
   ];
@@ -127,7 +128,7 @@ export default function HomePage() {
 
               {/* Search outline bar */}
               <Link
-                href="/auth/login"
+                href="/dashboard"
                 className="px-4 py-2 border border-neutral-800 bg-neutral-900/40 hover:bg-neutral-950 text-[11px] text-slate-300 font-semibold tracking-wide transition-colors flex items-center justify-center"
                 style={{ borderRadius: "500px" }}
               >
@@ -182,7 +183,7 @@ export default function HomePage() {
               </span>
             </div>
             <Link
-              href="/auth/login"
+              href="/solutions/high-school"
               className="px-5 py-2.5 bg-white text-black hover:bg-slate-100 text-xs font-bold rounded-sm shadow transition-colors flex-shrink-0"
             >
               Read more
@@ -277,7 +278,7 @@ export default function HomePage() {
               
               {/* Card 1: Coaches and Teams (Orange side border) */}
               <Link
-                href="/auth/login"
+                href="/solutions/high-school"
                 className="p-5 rounded bg-[#0b0d0e]/60 hover:bg-[#0b0d0e]/85 border border-neutral-800 border-l-4 border-l-[#ff6300] backdrop-blur-sm transition-all text-left flex flex-col gap-1 cursor-pointer"
               >
                 <span className="text-[10px] font-mono tracking-wider font-extrabold text-[#ff6300] uppercase block">
@@ -290,7 +291,7 @@ export default function HomePage() {
 
               {/* Card 2: Fans and Families (Blue side border) */}
               <Link
-                href="/auth/login"
+                href="/dashboard"
                 className="p-5 rounded bg-[#0b0d0e]/60 hover:bg-[#0b0d0e]/85 border border-neutral-800 border-l-4 border-l-[#009ce3] backdrop-blur-sm transition-all text-left flex flex-col gap-1 cursor-pointer"
               >
                 <span className="text-[10px] font-mono tracking-wider font-extrabold text-[#009ce3] uppercase block">
@@ -324,7 +325,7 @@ export default function HomePage() {
                   Our hands-free cameras use AI for livestreams, performance analysis and more.
                 </p>
               </div>
-              <Link href="/auth/login" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
+              <Link href="/products/focus" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
                 Explore Focus Cameras →
               </Link>
             </div>
@@ -343,7 +344,7 @@ export default function HomePage() {
                   With AI-powered video and data, ScoutVision delivers deeper insights for athletes and coaches at every level.
                 </p>
               </div>
-              <Link href="/auth/login" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
+              <Link href="/solutions/club" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
                 Find Your Sport →
               </Link>
             </div>
@@ -362,7 +363,7 @@ export default function HomePage() {
                   Your favorite athletes and teams are all on ScoutVision — from livestreams to can't-miss moments.
                 </p>
               </div>
-              <Link href="/auth/login" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
+              <Link href="/dashboard" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
                 Launch Fan Experience →
               </Link>
             </div>
@@ -381,7 +382,7 @@ export default function HomePage() {
                   Everything an athlete or a team needs to reach their potential is here. And we bring it all together.
                 </p>
               </div>
-              <Link href="/auth/login" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
+              <Link href="/products/volleymetrics" className="text-xs font-bold text-orange-500 hover:underline flex items-center gap-1 mt-6">
                 View All Products →
               </Link>
             </div>
@@ -403,7 +404,7 @@ export default function HomePage() {
               </p>
               <div className="mt-2">
                 <Link
-                  href="/auth/login"
+                  href="/solutions/high-school"
                   className="px-6 py-3 rounded bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs inline-flex items-center gap-1 transition-colors"
                 >
                   Explore Performance Solutions →
@@ -445,12 +446,12 @@ export default function HomePage() {
                 Looking to follow your favorite athlete or team? Whether it's scores, schedules, stats, livestreams or anything in between… it's on ScoutVision.
               </p>
               <div className="mt-2">
-                <a
-                  href="/auth/login"
+                <Link
+                  href="/dashboard"
                   className="px-6 py-3 rounded bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs inline-flex items-center gap-1 transition-colors"
                 >
                   Search Teams & Athletes →
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -567,14 +568,14 @@ export default function HomePage() {
           <div className="flex flex-col gap-4">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Solutions</h4>
             <nav className="flex flex-col gap-2 text-xs">
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">High School</Link>
-              <Link href="/solutions/club" className="hover:text-orange-500 transition-colors">Club</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Collegiate</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Division I Colleges</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Fan Engagement</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Operations</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Youth Football</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Professional</Link>
+              <Link href="/solutions/high-school" className="hover:text-orange-500 transition-colors">High School</Link>
+              <Link href="/solutions/club" className="hover:text-orange-500 transition-colors">Club Volleyball</Link>
+              <Link href="/solutions/collegiate" className="hover:text-orange-500 transition-colors">Collegiate</Link>
+              <Link href="/solutions/collegiate" className="hover:text-orange-500 transition-colors">Division I Colleges</Link>
+              <Link href="/dashboard" className="hover:text-orange-500 transition-colors">Fan Engagement</Link>
+              <Link href="/dashboard" className="hover:text-orange-500 transition-colors">Operations</Link>
+              <Link href="/solutions/club" className="hover:text-orange-500 transition-colors">Youth Academy</Link>
+              <Link href="/solutions/professional" className="hover:text-orange-500 transition-colors">Professional & Olympic</Link>
             </nav>
           </div>
 
@@ -582,11 +583,11 @@ export default function HomePage() {
           <div className="flex flex-col gap-4">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Products</h4>
             <nav className="flex flex-col gap-2 text-xs">
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">ScoutVision Focus</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">ScoutVision Analyst</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">ScoutVision Assist</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">ScoutVision Recruit</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Statsbomb</Link>
+              <Link href="/products/volleymetrics" className="hover:text-orange-500 transition-colors">Volleymetrics Pro</Link>
+              <Link href="/products/focus" className="hover:text-orange-500 transition-colors">ScoutVision Focus Camera</Link>
+              <Link href="/products/analyst" className="hover:text-orange-500 transition-colors">ScoutVision Analyst</Link>
+              <Link href="/products/assist" className="hover:text-orange-500 transition-colors">ScoutVision Assist</Link>
+              <Link href="/dashboard" className="hover:text-orange-500 transition-colors">Live Dashboard</Link>
             </nav>
           </div>
 
@@ -594,7 +595,9 @@ export default function HomePage() {
           <div className="flex flex-col gap-4">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Athletes and Fans</h4>
             <nav className="flex flex-col gap-2 text-xs">
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">ScoutVision Highlights</Link>
+              <Link href="/dashboard" className="hover:text-orange-500 transition-colors">ScoutVision Highlights</Link>
+              <Link href="/dashboard" className="hover:text-orange-500 transition-colors">Player Profiles & Stats</Link>
+              <Link href="/solutions/club" className="hover:text-orange-500 transition-colors">Recruiting Portals</Link>
             </nav>
           </div>
 
@@ -604,8 +607,8 @@ export default function HomePage() {
             <nav className="flex flex-col gap-2 text-xs">
               <Link href="/about" className="hover:text-orange-500 transition-colors">About Us</Link>
               <Link href="/solutions/high-school" className="hover:text-orange-500 transition-colors">High School Solutions</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Press</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Company News</Link>
+              <Link href="/about#milestones" className="hover:text-orange-500 transition-colors">Milestones & Press</Link>
+              <Link href="/about#pillars" className="hover:text-orange-500 transition-colors">Our Innovation</Link>
               <Link href="/careers" className="hover:text-orange-500 transition-colors">Careers & Jobs</Link>
             </nav>
           </div>
@@ -637,8 +640,9 @@ export default function HomePage() {
           <div className="flex flex-col gap-4">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Logins</h4>
             <nav className="flex flex-col gap-2 text-xs">
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Login</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Contact Sales</Link>
+              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Coach & Athlete Login</Link>
+              <Link href="/contact" className="hover:text-orange-500 transition-colors">Contact Sales</Link>
+              <Link href="/dashboard" className="hover:text-orange-500 transition-colors">Live Demo Environment</Link>
             </nav>
           </div>
 
@@ -649,17 +653,17 @@ export default function HomePage() {
           
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] text-slate-500 font-light text-center md:text-left">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-              <Link href="/auth/login" className="hover:underline">Privacy Policy</Link>
+              <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
               <span>|</span>
-              <Link href="/auth/login" className="hover:underline">Terms & Conditions</Link>
+              <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
               <span>|</span>
-              <Link href="/auth/login" className="hover:underline">Software License Agreement</Link>
+              <Link href="/terms#license" className="hover:underline">Software License Agreement</Link>
               <span>|</span>
-              <Link href="/auth/login" className="hover:underline">Do Not Sell My Info</Link>
+              <Link href="/privacy#california" className="hover:underline">Do Not Sell My Info</Link>
               <span>|</span>
-              <Link href="/auth/login" className="hover:underline">Cookies</Link>
+              <Link href="/privacy#cookies" className="hover:underline">Cookies</Link>
               <span>|</span>
-              <Link href="/auth/login" className="hover:underline">Security</Link>
+              <Link href="/privacy#security" className="hover:underline">Security</Link>
             </div>
             
             <div className="flex items-center gap-4">

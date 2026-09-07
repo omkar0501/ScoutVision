@@ -1093,8 +1093,8 @@ export default function HighSchoolSolutionPage() {
             <ul className="space-y-2">
               <li><Link href="/products/volleymetrics" className="hover:text-white transition-colors">Volleymetrics</Link></li>
               <li><Link href="/solutions/club" className="hover:text-white transition-colors">Club Volleyball</Link></li>
-              <li><Link href="/auth/login" className="hover:text-white transition-colors">Focus Smart Camera</Link></li>
-              <li><Link href="/auth/login" className="hover:text-white transition-colors">ScoutVision Assist</Link></li>
+              <li><Link href="/products/focus" className="hover:text-white transition-colors">Focus Smart Camera</Link></li>
+              <li><Link href="/products/assist" className="hover:text-white transition-colors">ScoutVision Assist</Link></li>
             </ul>
           </div>
 

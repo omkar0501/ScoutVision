@@ -518,17 +518,59 @@ export default function VolleyballClubSolutionPage() {
       </main>
 
       {/* FOOTER */}
-      <footer className="bg-[#14191d] border-t border-neutral-800 py-10 text-xs text-slate-500 text-center">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-white">ScoutVision Volleyball</span>
-            <span>• The Intelligent Video Standard for Club Volleyball</span>
+      <footer className="bg-[#14191d] border-t border-neutral-800 py-12 text-xs text-slate-400">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-left">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white text-base">Scout<span className="text-orange-500">Vision</span> Club</span>
+            </div>
+            <p className="text-slate-400 leading-relaxed text-xs">
+              The intelligent video and statistical standard for elite volleyball clubs and academies worldwide.
+            </p>
+            <div className="text-slate-300 text-xs">
+              📍 Magarpatta City, Hadapsar, Pune, Maharashtra 411028, India
+            </div>
+            <div className="text-xs">
+              ✉️ <a href="mailto:contact.scoutvision@gmail.com" className="text-orange-400 hover:underline">contact.scoutvision@gmail.com</a>
+            </div>
           </div>
-          <div className="text-right space-y-0.5">
-            <div>📍 Magarpatta City, Hadapsar, Pune, Maharashtra 411028, India</div>
-            <div>✉️ <a href="mailto:contact.scoutvision@gmail.com" className="text-orange-400 hover:underline">contact.scoutvision@gmail.com</a></div>
-            <div className="text-[10px] text-slate-500">© {new Date().getFullYear()} ScoutVision Technologies, Inc. All rights reserved.</div>
+
+          <div>
+            <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-xs">Products</h4>
+            <ul className="space-y-2 text-xs">
+              <li><Link href="/products/volleymetrics" className="hover:text-white transition-colors">Volleymetrics Pro</Link></li>
+              <li><Link href="/products/focus" className="hover:text-white transition-colors">Focus Smart Camera</Link></li>
+              <li><Link href="/products/assist" className="hover:text-white transition-colors">ScoutVision Assist</Link></li>
+              <li><Link href="/products/analyst" className="hover:text-white transition-colors">ScoutVision Analyst</Link></li>
+              <li><Link href="/dashboard" className="hover:text-white transition-colors">Live Dashboard</Link></li>
+            </ul>
           </div>
+
+          <div>
+            <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-xs">Solutions</h4>
+            <ul className="space-y-2 text-xs">
+              <li><Link href="/solutions/club" className="text-orange-500 font-medium">Club Volleyball</Link></li>
+              <li><Link href="/solutions/high-school" className="hover:text-white transition-colors">High School</Link></li>
+              <li><Link href="/solutions/collegiate" className="hover:text-white transition-colors">Collegiate Programs</Link></li>
+              <li><Link href="/solutions/professional" className="hover:text-white transition-colors">Professional & Olympic</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-xs">Company & Legal</h4>
+            <ul className="space-y-2 text-xs">
+              <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
+              <li><Link href="/careers" className="hover:text-white transition-colors">Careers & Jobs</Link></li>
+              <li><Link href="/contact" className="hover:text-white transition-colors">Contact Support</Link></li>
+              <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 pt-6 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
+          <div>© {new Date().getFullYear()} ScoutVision Technologies, Inc. All rights reserved.</div>
+          <div>Made for elite athletic performance.</div>
         </div>
       </footer>
 
