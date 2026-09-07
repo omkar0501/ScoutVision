@@ -84,7 +84,7 @@ export default function VolleymetricsProductPage() {
       name: "Company",
       dropdown: [
         { name: "About Us", href: "/about" },
-        { name: "Careers", href: "/auth/login" }
+        { name: "Careers", href: "/careers" }
       ]
     }
   ];

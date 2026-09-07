@@ -40,7 +40,7 @@ export default function HomePage() {
       name: "Company",
       dropdown: [
         { name: "About Us", href: "/about" },
-        { name: "Careers", href: "/auth/login" }
+        { name: "Careers", href: "/careers" }
       ]
     }
   ];
@@ -599,7 +599,7 @@ export default function HomePage() {
               <Link href="/solutions/high-school" className="hover:text-orange-500 transition-colors">High School Solutions</Link>
               <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Press</Link>
               <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Company News</Link>
-              <Link href="/auth/login" className="hover:text-orange-500 transition-colors">Careers</Link>
+              <Link href="/careers" className="hover:text-orange-500 transition-colors">Careers & Jobs</Link>
             </nav>
           </div>
 
