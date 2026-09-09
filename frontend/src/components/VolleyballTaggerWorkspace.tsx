@@ -13,7 +13,6 @@ import {
   VolumeX, 
   Settings, 
   Maximize, 
-  Check, 
   Undo, 
   ChevronDown, 
   ChevronUp, 
@@ -111,35 +110,40 @@ export default function VolleyballTaggerWorkspace({
   const [problemReportNotes, setProblemReportNotes] = useState("");
   const [showEndSetMenu, setShowEndSetMenu] = useState(false);
 
-  // Mode: "DUAL_COLUMN_INITIAL" | "COMPLETE_THE_TAG" | "POST_ATTACK_KILL" | "SERVE_ERROR" | "POST_SERVE_ERROR"
-  const [taggerMode, setTaggerMode] = useState<"DUAL_COLUMN_INITIAL" | "COMPLETE_THE_TAG" | "POST_ATTACK_KILL" | "SERVE_ERROR" | "POST_SERVE_ERROR">("COMPLETE_THE_TAG");
-  const [currentActionTitle, setCurrentActionTitle] = useState("MHS Attack Kill");
+  // =========================================================================
+  // TAGGER MODES:
+  // 1. "DUAL_INITIAL"    -> Frame 0 (00s): MHS Serve (Ace, Serve Error, Violation vs Serve Receive, Over Pass, Violation)
+  // 2. "COMPLETE_TAG"    -> Frame 1-8 (05s - 42s): Complete the Tag Accordion (Attack Kill sequence)
+  // 3. "POST_KILL"       -> Frame 10 (50s): MHS won point (11-5), MHS Serve / Violation vs Team 2 Violation
+  // 4. "SERVE_ERROR"     -> Frame 11 (55s): MHS Serve Error prompt (Who served the error?)
+  // 5. "POST_ERROR"      -> Frame 12 (60s): Team 2 won side-out (11-6), Team 2 gets Serve!
+  // =========================================================================
+  const [taggerMode, setTaggerMode] = useState<"DUAL_INITIAL" | "COMPLETE_TAG" | "POST_KILL" | "SERVE_ERROR" | "POST_ERROR">("DUAL_INITIAL");
+  const [currentActionTitle, setCurrentActionTitle] = useState("MHS Serve");
 
-  // Complete the Tag Accordion state
-  const [activeAccordionStep, setActiveAccordionStep] = useState<string>("attackLocation");
+  // Accordion active step
+  const [activeStep, setActiveStep] = useState<string>("whoServed");
   
-  // Accordion values (matching the exact video flow!)
-  const [selectedServer, setSelectedServer] = useState<Athlete>({ num: 9, name: "K. Sable" });
-  const [selectedReceiver, setSelectedReceiver] = useState<Athlete>({ num: 15, name: "Unknown" });
-  const [serveRating, setServeRating] = useState<number>(1);
-  const [freeBallSender, setFreeBallSender] = useState<Athlete>({ num: 2, name: "M. Barfield" });
-  const [freeBallReceiver, setFreeBallReceiver] = useState<Athlete>({ num: 9, name: "K. Sable" });
-  const [assistingPlayer, setAssistingPlayer] = useState<Athlete>({ num: 2, name: "A. Bragg" });
-  const [killingPlayer, setKillingPlayer] = useState<Athlete>({ num: 18, name: "Unknown" });
+  // Accordion answers
+  const [selectedServer, setSelectedServer] = useState<Athlete | null>(null);
+  const [selectedReceiver, setSelectedReceiver] = useState<Athlete | null>(null);
+  const [serveRating, setServeRating] = useState<number | null>(null);
+  const [freeBallSender, setFreeBallSender] = useState<Athlete | null>(null);
+  const [freeBallReceiver, setFreeBallReceiver] = useState<Athlete | null>(null);
+  const [assistingPlayer, setAssistingPlayer] = useState<Athlete | null>(null);
+  const [killingPlayer, setKillingPlayer] = useState<Athlete | null>(null);
   const [errorServer, setErrorServer] = useState<Athlete | null>(null);
 
-  // Active focused tag on timeline
-  const [activeFocusedTagId, setActiveFocusedTagId] = useState<string>("t_kill18");
-
-  // 2D Court Vector (Origin Blue Dot -> Landing Black Cross)
-  // Matching video at 41s: Attack landing cross near net on left court, origin near net right
-  const [attackStart, setAttackStart] = useState<{ x: number; y: number } | null>({ x: 135, y: 50 });
-  const [attackEnd, setAttackEnd] = useState<{ x: number; y: number } | null>({ x: 105, y: 50 });
+  // 2D Court Mark (Single black cross +)
+  const [attackLocation, setAttackLocation] = useState<{ x: number; y: number } | null>(null);
   const [attackDeflected, setAttackDeflected] = useState(false);
 
-  // Multi-track timeline tags matching the exact video frames!
+  // Active focused tag on timeline
+  const [activeFocusedTagId, setActiveFocusedTagId] = useState<string>("");
+
+  // Multi-track timeline tags
   const [timelineTags, setTimelineTags] = useState<TimelineTag[]>([
-    // === RALLY 1 (Previous play: 01:29:30 - 01:30:00) ===
+    // === RALLY 1 (01:29:30 - 01:30:00) ===
     { id: "r1_1", label: "Serve #10", timeSec: 5370, trackIndex: 0, theme: "light", team: "home" },
     { id: "r1_2", label: "Dig #9", timeSec: 5378, trackIndex: 0, theme: "light", team: "away" },
     { id: "r1_3", label: "Free Ball #1", timeSec: 5384, trackIndex: 0, theme: "dark", team: "away" },
@@ -160,18 +164,7 @@ export default function VolleyballTaggerWorkspace({
     { id: "r1_15", label: "Attack #1", timeSec: 5379, trackIndex: 3, theme: "dark", team: "away" },
     { id: "r1_16", label: "Attack #13", timeSec: 5387, trackIndex: 3, theme: "dark", team: "home" },
     { id: "r1_17", label: "Attack #18", timeSec: 5393, trackIndex: 3, theme: "dark", team: "home" },
-    { id: "r1_18", label: "Dig #10", timeSec: 5399, trackIndex: 3, theme: "dark", team: "away" },
-
-    // === RALLY 2 (Current play in video: 01:30:20 - 01:30:35) ===
-    { id: "t_serve9", label: "Serve #9", timeSec: 5420, trackIndex: 0, theme: "light", team: "home" },
-    { id: "t_set2", label: "Set #2", timeSec: 5428, trackIndex: 0, theme: "light", team: "home" },
-
-    { id: "t_sr15", label: "Serve Receive #15", timeSec: 5422, trackIndex: 1, theme: "dark", team: "away" },
-    { id: "t_kill18", label: "Attack Kill #18", timeSec: 5430, trackIndex: 1, theme: "highlight", team: "home" },
-
-    { id: "t_fb2", label: "Free Ball #2", timeSec: 5424, trackIndex: 2, theme: "dark", team: "away" },
-
-    { id: "t_fbr9", label: "Free Ball Receive #9", timeSec: 5426, trackIndex: 3, theme: "dark", team: "home" }
+    { id: "r1_18", label: "Dig #10", timeSec: 5399, trackIndex: 3, theme: "dark", team: "away" }
   ]);
 
   // Format seconds to H:MM:SS
@@ -217,48 +210,86 @@ export default function VolleyballTaggerWorkspace({
   };
 
   const handleUndo = () => {
-    if (taggerMode === "POST_SERVE_ERROR") {
+    if (taggerMode === "POST_ERROR") {
       setTaggerMode("SERVE_ERROR");
       setAwayScore(5);
       setTimelineTags(prev => prev.filter(t => !t.label.includes("Serve Error")));
       triggerAlert("info", "Undid Serve Error");
     } else if (taggerMode === "SERVE_ERROR") {
-      setTaggerMode("POST_ATTACK_KILL");
-      triggerAlert("info", "Returned to Post-Kill options");
-    } else if (taggerMode === "POST_ATTACK_KILL") {
-      setTaggerMode("COMPLETE_THE_TAG");
+      setTaggerMode("POST_KILL");
+      triggerAlert("info", "Returned to Post-Kill");
+    } else if (taggerMode === "POST_KILL") {
+      setTaggerMode("COMPLETE_TAG");
       setHomeScore(10);
-      triggerAlert("info", "Undid Attack Kill completion");
-    } else if (taggerMode === "COMPLETE_THE_TAG") {
-      setTaggerMode("DUAL_COLUMN_INITIAL");
-      triggerAlert("info", "Undid Complete the Tag");
+      triggerAlert("info", "Undid Attack Kill");
+    } else if (taggerMode === "COMPLETE_TAG") {
+      setTaggerMode("DUAL_INITIAL");
+      setCurrentActionTitle("MHS Serve");
+      triggerAlert("info", "Returned to initial Serve Keypad");
     } else {
       triggerAlert("info", "Last action undone (U)");
     }
   };
 
-  // Step finishing: Save Attack Kill
-  const handleFinishAttackKillTag = () => {
-    // 1. Increment MHS score from 10 to 11
+  // 1. Analyst clicks "Serve Receive" in Dual Column Keypad
+  const handleStartServeReceiveFlow = () => {
+    setTaggerMode("COMPLETE_TAG");
+    setCurrentActionTitle("MHS Attack Kill");
+    setActiveStep("whoServed");
+    // Pre-populate with realistic starting defaults from the video, but allow full interactive selection
+    setSelectedServer({ num: 9, name: "K. Sable" });
+    setSelectedReceiver({ num: 15, name: "Unknown" });
+    setServeRating(1);
+    setFreeBallSender({ num: 2, name: "M. Barfield" });
+    setFreeBallReceiver({ num: 9, name: "K. Sable" });
+    setAssistingPlayer({ num: 2, name: "A. Bragg" });
+    setKillingPlayer({ num: 18, name: "Unknown" });
+    setActiveStep("attackLocation");
+    setActiveFocusedTagId("t_kill18");
+  };
+
+  // 2. Clicking court location in "Where did the attack occur?"
+  // Directly marks '+' and AUTOMATICALLY completes tag (NO save button, exactly like the video at 42s!)
+  const handleCourtClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * 240);
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * 120);
+
+    setAttackLocation({ x, y });
+
+    // Instantly add Rally 2 tags to the timeline
+    const rally2Tags: TimelineTag[] = [
+      { id: "t_serve9", label: `Serve #${selectedServer?.num || 9}`, timeSec: 5420, trackIndex: 0, theme: "light", team: "home" },
+      { id: "t_set2", label: `Set #${assistingPlayer?.num || 2}`, timeSec: 5428, trackIndex: 0, theme: "light", team: "home" },
+      { id: "t_sr15", label: `Serve Receive #${selectedReceiver?.num || 15}`, timeSec: 5422, trackIndex: 1, theme: "dark", team: "away" },
+      { id: "t_kill18", label: `Attack Kill #${killingPlayer?.num || 18}`, timeSec: 5430, trackIndex: 1, theme: "highlight", team: "home" },
+      { id: "t_fb2", label: `Free Ball #${freeBallSender?.num || 2}`, timeSec: 5424, trackIndex: 2, theme: "dark", team: "away" },
+      { id: "t_fbr9", label: `Free Ball Receive #${freeBallReceiver?.num || 9}`, timeSec: 5426, trackIndex: 3, theme: "dark", team: "home" }
+    ];
+
+    setTimelineTags(prev => [
+      ...prev.filter(t => !t.id.startsWith("t_")),
+      ...rally2Tags
+    ]);
+
+    // Update score from 10 to 11
     setHomeScore(11);
-    
-    // 2. Set current time to 1:30:44 (exact timestamp in video frame 10)
     setCurrentTime(5444);
     if (videoRef.current) {
       videoRef.current.currentTime = 24;
     }
 
-    triggerAlert("success", `Point MHS! Attack Kill #${killingPlayer.num} confirmed (11 - 5).`);
-
-    // 3. Move to Post Attack Kill panel state (as in video frame 10 at 50s)
-    setTaggerMode("POST_ATTACK_KILL");
-    setCurrentActionTitle("MHS Attack Kill");
-    setActiveFocusedTagId("");
+    // Auto-advance directly to Post Kill panel (Frame 10 at 50s)
+    setTimeout(() => {
+      setTaggerMode("POST_KILL");
+      setCurrentActionTitle("MHS Attack Kill");
+      setActiveFocusedTagId("");
+      triggerAlert("success", "Point MHS! Attack Kill confirmed (11 - 5).");
+    }, 200);
   };
 
-  // Clicking "Serve" in MHS column after Attack Kill
-  const handleStartMhsServe = () => {
-    // Video advances to 1:30:48 (frame 11)
+  // 3. Clicking "Serve" in Post Kill panel
+  const handleStartMhsServeError = () => {
     setCurrentTime(5448);
     if (videoRef.current) {
       videoRef.current.currentTime = 28;
@@ -266,23 +297,19 @@ export default function VolleyballTaggerWorkspace({
 
     setTaggerMode("SERVE_ERROR");
     setCurrentActionTitle("MHS Serve Error");
-    setActiveAccordionStep("whoServedError");
     setActiveFocusedTagId("t_error_pending");
   };
 
-  // Step finishing: Save Serve Error
+  // 4. Selecting athlete who served the error (e.g. #10 E. Littig)
   const handleSelectServeErrorAthlete = (ath: Athlete) => {
     setErrorServer(ath);
-    // Team 2 score increments from 5 to 6 (Side-out)
+    // Team 2 gets side-out point (11 - 6)
     setAwayScore(6);
-
-    // Video advances to 1:30:51 (exact timestamp in video frame 12 at 60s)
     setCurrentTime(5451);
     if (videoRef.current) {
       videoRef.current.currentTime = 31;
     }
 
-    // Add Serve Error #10 to Track 0
     const newTag: TimelineTag = {
       id: "t_error_10",
       label: `Serve Error #${ath.num}`,
@@ -294,11 +321,10 @@ export default function VolleyballTaggerWorkspace({
     setTimelineTags(prev => [...prev, newTag]);
     setActiveFocusedTagId("t_error_10");
 
-    triggerAlert("success", `Point Team 2! Serve Error #${ath.num} logged (11 - 6). Team 2 serves next.`);
-
-    // Move to Post Serve Error state (as in video frame 12: Team 2 gets Serve button)
-    setTaggerMode("POST_SERVE_ERROR");
+    // Automatically transition to Post Error panel (Frame 12 at 60s)
+    setTaggerMode("POST_ERROR");
     setCurrentActionTitle("MHS Serve Error");
+    triggerAlert("success", `Point Team 2! Serve Error #${ath.num} (11 - 6). Team 2 serves next.`);
   };
 
   return (
@@ -309,7 +335,7 @@ export default function VolleyballTaggerWorkspace({
       {/* ------------------------------------------------------------- */}
       <div className="h-10 bg-[#191F24] border-b border-neutral-800 px-4 flex items-center justify-between text-xs flex-shrink-0 z-40">
         
-        {/* Left: Back / Exit */}
+        {/* Left: Exit */}
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -321,7 +347,7 @@ export default function VolleyballTaggerWorkspace({
           </button>
         </div>
 
-        {/* Center: Match Live Scoreboard */}
+        {/* Center: Live Scoreboard (MHS 10  3rd  5  Team 2) */}
         <div className="flex items-center gap-3 font-mono text-sm tracking-wide bg-[#14181c] px-4 py-1 rounded border border-neutral-800 shadow-inner">
           <span className="font-bold text-slate-200">{homeTeam}</span>
           <span className="font-extrabold text-orange-400 text-base">{homeScore}</span>
@@ -335,7 +361,6 @@ export default function VolleyballTaggerWorkspace({
         {/* Right: End Set Menu, Coach Notes, Options */}
         <div className="flex items-center gap-2 relative">
           
-          {/* End Set or Match Dropdown */}
           <div className="relative">
             <button
               type="button"
@@ -363,7 +388,7 @@ export default function VolleyballTaggerWorkspace({
                   type="button"
                   onClick={() => {
                     setShowEndSetMenu(false);
-                    triggerAlert("info", "Match concluded as completed.");
+                    triggerAlert("info", "Match concluded.");
                     if (onSave) onSave(timelineTags);
                   }}
                   className="w-full text-left px-3 py-1.5 hover:bg-neutral-700 transition-colors"
@@ -374,7 +399,6 @@ export default function VolleyballTaggerWorkspace({
             )}
           </div>
 
-          {/* Coach Notes Button */}
           <button
             type="button"
             onClick={() => setShowCoachNotes(true)}
@@ -383,7 +407,6 @@ export default function VolleyballTaggerWorkspace({
             Coach Notes
           </button>
 
-          {/* Options Button */}
           <button
             type="button"
             onClick={() => setShowOptionsModal(true)}
@@ -417,14 +440,13 @@ export default function VolleyballTaggerWorkspace({
               muted={isMuted}
               onTimeUpdate={() => {
                 if (videoRef.current) {
-                  // Keep simulated timeline clock synchronized
-                  const base = taggerMode === "POST_SERVE_ERROR" ? 5451 : taggerMode === "SERVE_ERROR" ? 5448 : taggerMode === "POST_ATTACK_KILL" ? 5444 : 5420;
+                  const base = taggerMode === "POST_ERROR" ? 5451 : taggerMode === "SERVE_ERROR" ? 5448 : taggerMode === "POST_KILL" ? 5444 : 5420;
                   setCurrentTime(base + Math.floor(videoRef.current.currentTime));
                 }
               }}
             />
 
-            {/* B. LED Digital Scoreboard Graphic Overlay (Bottom-Left Corner) */}
+            {/* B. LED Digital Scoreboard Graphic Overlay */}
             <div className="absolute bottom-4 left-4 z-20 pointer-events-none select-none">
               <div className="bg-black/95 border-2 border-neutral-700 rounded-xs p-2 text-amber-500 font-mono shadow-2xl flex flex-col gap-1 w-32 backdrop-blur-xs">
                 <div className="flex justify-between text-[10px] text-slate-400 font-bold border-b border-neutral-800 pb-0.5 uppercase">
@@ -446,10 +468,10 @@ export default function VolleyballTaggerWorkspace({
 
           </div>
 
-          {/* C. Orange Scrubber + Video Transport Bar */}
+          {/* C. Scrubber Bar with Bright Orange Progress Line */}
           <div className="h-10 bg-[#14181c] border-t border-neutral-800 px-4 flex items-center justify-between text-xs text-slate-300 flex-shrink-0 z-10 relative">
             
-            {/* Bright Orange Scrubber Bar along top edge */}
+            {/* Orange Scrubber line */}
             <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-neutral-800">
               <div 
                 className="h-full bg-orange-500 transition-all duration-300"
@@ -459,41 +481,20 @@ export default function VolleyballTaggerWorkspace({
 
             {/* Left Transport Controls */}
             <div className="flex items-center gap-2.5">
-              <button 
-                type="button" 
-                onClick={() => handleSeek(-100)} 
-                className="hover:text-white cursor-pointer"
-                title="To Start"
-              >
+              <button type="button" onClick={() => handleSeek(-100)} className="hover:text-white cursor-pointer" title="To Start">
                 <SkipBack className="w-3.5 h-3.5" />
               </button>
-              <button 
-                type="button" 
-                onClick={() => handleSeek(-1)} 
-                className="hover:text-white cursor-pointer text-[11px] font-bold font-mono"
-                title="Frame Back"
-              >
+              <button type="button" onClick={() => handleSeek(-1)} className="hover:text-white cursor-pointer text-[11px] font-bold font-mono" title="Frame Back">
                 ◀◀
               </button>
-              <button 
-                type="button" 
-                onClick={() => handleSeek(-0.2)} 
-                className="hover:text-white cursor-pointer text-[11px] font-bold font-mono"
-                title="Step Back"
-              >
+              <button type="button" onClick={() => handleSeek(-0.2)} className="hover:text-white cursor-pointer text-[11px] font-bold font-mono" title="Step Back">
                 ◀
               </button>
-              <button 
-                type="button" 
-                onClick={() => handleSeek(-5)} 
-                className="hover:text-white cursor-pointer flex items-center"
-                title="Replay 5s"
-              >
+              <button type="button" onClick={() => handleSeek(-5)} className="hover:text-white cursor-pointer flex items-center" title="Replay 5s">
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span className="text-[9px] font-mono ml-0.5">5</span>
               </button>
               
-              {/* Play/Pause */}
               <button 
                 type="button" 
                 onClick={togglePlay} 
@@ -503,41 +504,20 @@ export default function VolleyballTaggerWorkspace({
                 {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current ml-0.5" />}
               </button>
 
-              <button 
-                type="button" 
-                onClick={() => handleSeek(5)} 
-                className="hover:text-white cursor-pointer flex items-center"
-                title="Skip 5s"
-              >
+              <button type="button" onClick={() => handleSeek(5)} className="hover:text-white cursor-pointer flex items-center" title="Skip 5s">
                 <RotateCw className="w-3.5 h-3.5" />
                 <span className="text-[9px] font-mono ml-0.5">5</span>
               </button>
-              <button 
-                type="button" 
-                onClick={() => handleSeek(0.2)} 
-                className="hover:text-white cursor-pointer text-[11px] font-bold font-mono"
-                title="Step Forward"
-              >
+              <button type="button" onClick={() => handleSeek(0.2)} className="hover:text-white cursor-pointer text-[11px] font-bold font-mono" title="Step Forward">
                 ▶
               </button>
-              <button 
-                type="button" 
-                onClick={() => handleSeek(1)} 
-                className="hover:text-white cursor-pointer text-[11px] font-bold font-mono"
-                title="Frame Forward"
-              >
+              <button type="button" onClick={() => handleSeek(1)} className="hover:text-white cursor-pointer text-[11px] font-bold font-mono" title="Frame Forward">
                 ▶▶
               </button>
-              <button 
-                type="button" 
-                onClick={() => handleSeek(15)} 
-                className="hover:text-white cursor-pointer"
-                title="Next Clip"
-              >
+              <button type="button" onClick={() => handleSeek(15)} className="hover:text-white cursor-pointer" title="Next Clip">
                 <SkipForward className="w-3.5 h-3.5" />
               </button>
 
-              {/* Timecode */}
               <span className="font-mono text-xs text-slate-300 ml-2 font-bold">
                 {formatTime(currentTime)} / {formatTime(totalDuration)}
               </span>
@@ -545,24 +525,12 @@ export default function VolleyballTaggerWorkspace({
 
             {/* Right Quick Controls */}
             <div className="flex items-center gap-3 text-slate-400">
-              <button 
-                type="button" 
-                onClick={() => setIsMuted(!isMuted)} 
-                className="hover:text-white cursor-pointer"
-                title={isMuted ? "Unmute" : "Mute"}
-              >
+              <button type="button" onClick={() => setIsMuted(!isMuted)} className="hover:text-white cursor-pointer">
                 {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
               </button>
-
-              <button 
-                type="button" 
-                onClick={() => setShowOptionsModal(true)} 
-                className="hover:text-white cursor-pointer"
-                title="Settings"
-              >
+              <button type="button" onClick={() => setShowOptionsModal(true)} className="hover:text-white cursor-pointer">
                 <Settings className="w-4 h-4" />
               </button>
-
               <button 
                 type="button" 
                 onClick={() => {
@@ -573,24 +541,28 @@ export default function VolleyballTaggerWorkspace({
                   }
                 }} 
                 className="hover:text-white cursor-pointer"
-                title="Fullscreen"
               >
                 <Maximize className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* D. Multi-Track Timeline (4 Tracks, Dimmed Past Rally, Exact Video Blocks) */}
-          <div className="h-36 bg-[#0c0f12] border-t border-neutral-900 px-4 py-2 flex flex-col justify-between flex-shrink-0 relative overflow-hidden">
+          {/* D. Multi-Track Timeline (4 Tracks, exact sharp blocks, resize handle) */}
+          <div className="h-44 bg-[#14181c] border-t border-neutral-900 px-4 py-2 flex flex-col justify-between flex-shrink-0 relative overflow-hidden">
             
-            {/* Timeline Viewport Container */}
+            {/* Splitter / Resize Grip Header */}
+            <div className="w-full flex items-center justify-center pb-1">
+              <div className="w-8 h-1 rounded bg-neutral-700/60 cursor-ns-resize" />
+            </div>
+
+            {/* Timeline Viewport */}
             <div className="relative w-full flex-1 overflow-hidden">
               
               {/* Vertical Playhead Cursor (White Line with Center Handle) */}
               <div 
                 className="absolute top-0 bottom-0 w-[1.5px] bg-white z-30 pointer-events-none flex items-center justify-center"
                 style={{ 
-                  left: taggerMode === "POST_SERVE_ERROR" ? "68%" : taggerMode === "SERVE_ERROR" ? "60%" : "48%" 
+                  left: taggerMode === "POST_ERROR" ? "70%" : taggerMode === "SERVE_ERROR" ? "62%" : "48%" 
                 }}
               >
                 <div className="w-3 h-4 rounded-xs bg-white text-black text-[8px] flex items-center justify-center font-bold shadow -ml-[0.5px]">
@@ -598,19 +570,16 @@ export default function VolleyballTaggerWorkspace({
                 </div>
               </div>
 
-              {/* 4 Track Dividing Lines */}
-              <div className="absolute inset-x-0 top-[25%] h-[1px] bg-neutral-900/80" />
-              <div className="absolute inset-x-0 top-[50%] h-[1px] bg-neutral-900/80" />
-              <div className="absolute inset-x-0 top-[75%] h-[1px] bg-neutral-900/80" />
+              {/* 4 Track Dividers */}
+              <div className="absolute inset-x-0 top-[25%] h-[1px] bg-neutral-900/60" />
+              <div className="absolute inset-x-0 top-[50%] h-[1px] bg-neutral-900/60" />
+              <div className="absolute inset-x-0 top-[75%] h-[1px] bg-neutral-900/60" />
 
-              {/* Render Tag Blocks on 4 Tracks */}
+              {/* Render Tag Blocks */}
               {timelineTags.map((tag) => {
-                // Calculation for position along 01:29:30 - 01:31:30 (120s window)
-                const baseTime = 5420; // 01:30:20
+                const baseTime = 5420;
                 const offsetSec = tag.timeSec - baseTime;
-                
-                // Shift window smoothly when progressing to serve error
-                const windowOffset = taggerMode === "POST_SERVE_ERROR" ? -18 : taggerMode === "SERVE_ERROR" ? -10 : 0;
+                const windowOffset = taggerMode === "POST_ERROR" ? -20 : taggerMode === "SERVE_ERROR" ? -12 : 0;
                 const leftPercent = 48 + ((offsetSec + windowOffset) * 1.8);
 
                 if (leftPercent < -15 || leftPercent > 115) return null;
@@ -625,21 +594,20 @@ export default function VolleyballTaggerWorkspace({
                       setCurrentTime(tag.timeSec);
                       setActiveFocusedTagId(tag.id);
                     }}
-                    className={`absolute text-[10px] font-medium px-2 py-0.5 cursor-pointer whitespace-nowrap transition-all border select-none ${
+                    className={`absolute text-[10px] font-sans px-1.5 py-0.5 cursor-pointer whitespace-nowrap transition-all border select-none ${
                       isFocused
                         ? "bg-white text-black border-2 border-white font-extrabold shadow-[0_0_10px_rgba(255,255,255,0.7)] z-20 scale-105"
                         : tag.theme === "dark"
-                        ? `bg-[#181d24] text-slate-200 border-neutral-700 ${isPreviousRally ? "opacity-50" : "opacity-90"}`
-                        : `bg-[#e2e8f0] text-neutral-950 border-neutral-300 font-semibold ${isPreviousRally ? "opacity-50" : "opacity-100"}`
+                        ? `bg-[#242b33] text-slate-100 border-neutral-700 ${isPreviousRally ? "opacity-50" : "opacity-95"}`
+                        : `bg-[#e6ebf0] text-neutral-950 border-neutral-300 font-semibold ${isPreviousRally ? "opacity-50" : "opacity-100"}`
                     }`}
                     style={{
-                      top: `${tag.trackIndex * 22}px`,
+                      top: `${tag.trackIndex * 24}px`,
                       left: `${leftPercent}%`,
-                      height: "19px",
-                      lineHeight: "13px"
+                      height: "21px",
+                      lineHeight: "15px"
                     }}
                   >
-                    {isFocused && <span className="text-orange-600 font-mono mr-1">▶</span>}
                     {tag.label}
                   </div>
                 );
@@ -651,9 +619,9 @@ export default function VolleyballTaggerWorkspace({
                   className="absolute bg-white text-black border-2 border-white text-[10px] font-extrabold px-2 py-0.5 shadow-[0_0_10px_rgba(255,255,255,0.8)] z-20"
                   style={{
                     top: "0px",
-                    left: "58%",
-                    height: "19px",
-                    lineHeight: "13px"
+                    left: "60%",
+                    height: "21px",
+                    lineHeight: "15px"
                   }}
                 >
                   <span className="animate-pulse mr-1">●</span> Serve Error
@@ -661,7 +629,7 @@ export default function VolleyballTaggerWorkspace({
               )}
             </div>
 
-            {/* Bottom Timecode Marks matching video (30-second intervals) */}
+            {/* Timecode Marks */}
             <div className="flex justify-between items-center text-[9px] font-mono text-slate-500 pt-1 border-t border-neutral-900 select-none">
               <span>01:29:30</span>
               <span>01:30:00</span>
@@ -675,25 +643,132 @@ export default function VolleyballTaggerWorkspace({
         </div>
 
         {/* =========================================================== */}
-        {/* RIGHT COLUMN: TAGGING PANEL (Exact Same-To-Same UI)         */}
+        {/* RIGHT COLUMN: TAGGING PANEL                                 */}
         {/* =========================================================== */}
-        <div className="w-80 md:w-96 bg-[#161a1e] border-l border-neutral-800 flex flex-col justify-between flex-shrink-0 z-30">
+        <div className="w-[430px] bg-[#161a1e] border-l border-neutral-800 flex flex-col justify-between flex-shrink-0 z-30">
           
           {/* ========================================================= */}
-          {/* CASE A: "COMPLETE THE TAG" ACCORDION FLOW (Attack Kill)   */}
+          {/* MODE 1: DUAL INITIAL KEYPAD (Frame 0 at 00s)              */}
           {/* ========================================================= */}
-          {taggerMode === "COMPLETE_THE_TAG" && (
+          {taggerMode === "DUAL_INITIAL" && (
+            <div className="flex-1 flex flex-col justify-between overflow-hidden">
+              <div className="flex-1 flex flex-col">
+                
+                {/* Subheader */}
+                <div className="bg-white border-b border-neutral-300 px-4 py-2 flex items-center justify-between text-neutral-900 font-bold text-xs flex-shrink-0">
+                  <span className="font-extrabold">MHS Serve</span>
+                  <button
+                    type="button"
+                    onClick={handleUndo}
+                    className="flex items-center gap-1 text-[11px] text-neutral-700 hover:text-black cursor-pointer font-semibold"
+                  >
+                    <Undo className="w-3.5 h-3.5" />
+                    <span>Undo (U)</span>
+                  </button>
+                </div>
+
+                {/* Dual Columns: MHS (White) vs Team 2 (Dark Charcoal) */}
+                <div className="flex-1 grid grid-cols-2">
+                  
+                  {/* Left Column: MHS */}
+                  <div className="bg-[#f0f2f5] border-r border-neutral-300 flex flex-col">
+                    <div className="p-3 font-extrabold text-neutral-900 text-sm border-b border-neutral-300 bg-white">
+                      MHS
+                    </div>
+                    <div className="flex flex-col">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setHomeScore(prev => prev + 1);
+                          triggerAlert("success", "Point MHS! Ace logged.");
+                        }}
+                        className="w-full text-left px-4 py-3 bg-white hover:bg-slate-100 text-neutral-900 font-bold border-b border-neutral-300 cursor-pointer transition-colors shadow-2xs"
+                      >
+                        Ace
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleStartMhsServeError}
+                        className="w-full text-left px-4 py-3 bg-white hover:bg-slate-100 text-neutral-900 font-bold border-b border-neutral-300 cursor-pointer transition-colors"
+                      >
+                        Serve Error
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => triggerAlert("info", "Violation logged for MHS")}
+                        className="w-full text-left px-4 py-3 bg-white hover:bg-slate-100 text-neutral-900 font-bold border-b border-neutral-300 cursor-pointer transition-colors"
+                      >
+                        Violation
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Team 2 */}
+                  <div className="bg-[#9da3a8] flex flex-col">
+                    <div className="p-3 font-extrabold text-white text-sm bg-[#4a5259] border-b border-neutral-600">
+                      Team 2
+                    </div>
+                    <div className="flex flex-col">
+                      <button
+                        type="button"
+                        onClick={handleStartServeReceiveFlow}
+                        className="w-full text-left px-4 py-3 bg-[#6b757e] hover:bg-[#78838d] text-white font-bold border-b border-neutral-600 cursor-pointer transition-colors"
+                      >
+                        Serve Receive
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => triggerAlert("info", "Over Pass logged for Team 2")}
+                        className="w-full text-left px-4 py-3 bg-[#4a5259] hover:bg-[#565e66] text-white font-bold border-b border-neutral-600 cursor-pointer transition-colors"
+                      >
+                        Over Pass
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => triggerAlert("info", "Violation logged for Team 2")}
+                        className="w-full text-left px-4 py-3 bg-[#4a5259] hover:bg-[#565e66] text-white font-bold border-b border-neutral-600 cursor-pointer transition-colors"
+                      >
+                        Violation
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* Bottom Button */}
+              <div className="bg-[#1b2025] border-t border-neutral-800">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onSave) onSave(timelineTags);
+                    onClose();
+                  }}
+                  className="w-full py-3 bg-[#262d35] hover:bg-[#323a44] text-white font-bold text-xs transition-colors text-center cursor-pointer"
+                >
+                  Save and Exit
+                </button>
+              </div>
+
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* MODE 2: "COMPLETE THE TAG" ACCORDION FLOW                 */}
+          {/* ========================================================= */}
+          {taggerMode === "COMPLETE_TAG" && (
             <div className="flex-1 flex flex-col overflow-hidden">
               
-              {/* Top Bar Header */}
+              {/* Header */}
               <div className="h-9 bg-[#111417] border-b border-neutral-800 px-4 flex items-center justify-center flex-shrink-0">
                 <span className="font-extrabold text-xs tracking-wider text-slate-100 font-sans">
                   Complete the Tag
                 </span>
               </div>
 
-              {/* Action Banner + Undo */}
-              <div className="bg-white border-b border-neutral-300 px-4 py-2 flex items-center justify-between text-neutral-900 font-bold text-xs flex-shrink-0 shadow-xs">
+              {/* Subheader */}
+              <div className="bg-white border-b border-neutral-300 px-4 py-2 flex items-center justify-between text-neutral-900 font-bold text-xs flex-shrink-0 shadow-2xs">
                 <span className="font-extrabold tracking-wide">{currentActionTitle}</span>
                 <button
                   type="button"
@@ -705,52 +780,92 @@ export default function VolleyballTaggerWorkspace({
                 </button>
               </div>
 
-              {/* Accordion Steps List */}
+              {/* Color-Coded Accordion Steps */}
               <div className="flex-1 overflow-y-auto bg-neutral-900 divide-y divide-neutral-800 text-xs">
                 
-                {/* 1. Who served? */}
+                {/* 1. Who served? (MHS - White) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoServed" ? "" : "whoServed")}
+                    onClick={() => setActiveStep(activeStep === "whoServed" ? "" : "whoServed")}
                     className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
                   >
-                    <span>Who served? <span className="font-normal ml-2 font-mono text-neutral-700">#{selectedServer.num} {selectedServer.name}</span></span>
-                    {activeAccordionStep === "whoServed" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                    <span>Who served? <span className="font-normal ml-2 font-mono text-neutral-700">{selectedServer ? `#${selectedServer.num} ${selectedServer.name}` : ""}</span></span>
+                    {activeStep === "whoServed" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
                   </button>
+                  {activeStep === "whoServed" && (
+                    <div className="p-3 bg-white text-neutral-900 border-t border-neutral-200">
+                      <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
+                        {mhsRoster.map(ath => (
+                          <button
+                            key={ath.num}
+                            type="button"
+                            onClick={() => {
+                              setSelectedServer(ath);
+                              setActiveStep("whoReceived");
+                            }}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${selectedServer?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
+                          >
+                            <span className="font-bold mr-1">{ath.num}</span> {ath.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* 2. Who received the serve? */}
+                {/* 2. Who received the serve? (Team 2 - Dark Charcoal) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoReceived" ? "" : "whoReceived")}
+                    onClick={() => setActiveStep(activeStep === "whoReceived" ? "" : "whoReceived")}
                     className="w-full bg-[#3c444c] text-white px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-[#464f58] transition-colors"
                   >
-                    <span>Who received the serve? <span className="font-normal ml-2 font-mono text-slate-200">#{selectedReceiver.num}</span></span>
-                    {activeAccordionStep === "whoReceived" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                    <span>Who received the serve? <span className="font-normal ml-2 font-mono text-slate-200">{selectedReceiver ? `#${selectedReceiver.num}` : ""}</span></span>
+                    {activeStep === "whoReceived" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                   </button>
+                  {activeStep === "whoReceived" && (
+                    <div className="p-3 bg-[#3c444c] text-white border-t border-neutral-700">
+                      <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
+                        {team2Roster.map(ath => (
+                          <button
+                            key={ath.num}
+                            type="button"
+                            onClick={() => {
+                              setSelectedReceiver(ath);
+                              setActiveStep("rateReceive");
+                            }}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${selectedReceiver?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-600"}`}
+                          >
+                            <span className="font-bold mr-1">{ath.num}</span> {ath.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* 3. Rate the serve receive. */}
+                {/* 3. Rate the serve receive. (Team 2 - Dark Charcoal) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "rateReceive" ? "" : "rateReceive")}
+                    onClick={() => setActiveStep(activeStep === "rateReceive" ? "" : "rateReceive")}
                     className="w-full bg-[#3c444c] text-white px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-[#464f58] transition-colors"
                   >
-                    <span>Rate the serve receive. <span className="font-normal ml-2 font-mono text-slate-200">{serveRating}</span></span>
-                    {activeAccordionStep === "rateReceive" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                    <span>Rate the serve receive. <span className="font-normal ml-2 font-mono text-slate-200">{serveRating !== null ? serveRating : ""}</span></span>
+                    {activeStep === "rateReceive" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                   </button>
-                  
-                  {activeAccordionStep === "rateReceive" && (
-                    <div className="p-3 bg-[#1e2329] flex justify-around">
+                  {activeStep === "rateReceive" && (
+                    <div className="p-3 bg-[#2b3137] flex justify-around">
                       {[0, 1, 2, 3].map((r) => (
                         <button
                           key={r}
                           type="button"
-                          onClick={() => setServeRating(r)}
-                          className={`w-12 h-10 rounded font-bold text-sm transition-all ${serveRating === r ? "bg-orange-500 text-white shadow-lg" : "bg-neutral-800 text-slate-300 hover:bg-neutral-700"}`}
+                          onClick={() => {
+                            setServeRating(r);
+                            setActiveStep("whoSentFreeBall");
+                          }}
+                          className={`w-12 h-10 rounded font-bold text-sm transition-all cursor-pointer ${serveRating === r ? "bg-orange-500 text-white shadow-lg" : "bg-neutral-800 text-slate-300 hover:bg-neutral-700"}`}
                         >
                           {r}
                         </button>
@@ -759,30 +874,48 @@ export default function VolleyballTaggerWorkspace({
                   )}
                 </div>
 
-                {/* 4. Who sent the free ball? */}
+                {/* 4. Who sent the free ball? (Team 2 - Dark Charcoal) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoSentFreeBall" ? "" : "whoSentFreeBall")}
+                    onClick={() => setActiveStep(activeStep === "whoSentFreeBall" ? "" : "whoSentFreeBall")}
                     className="w-full bg-[#3c444c] text-white px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-[#464f58] transition-colors"
                   >
-                    <span>Who sent the free ball? <span className="font-normal ml-2 font-mono text-slate-200">#{freeBallSender.num} {freeBallSender.name}</span></span>
-                    {activeAccordionStep === "whoSentFreeBall" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                    <span>Who sent the free ball? <span className="font-normal ml-2 font-mono text-slate-200">{freeBallSender ? `#${freeBallSender.num} ${freeBallSender.name}` : ""}</span></span>
+                    {activeStep === "whoSentFreeBall" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                   </button>
+                  {activeStep === "whoSentFreeBall" && (
+                    <div className="p-3 bg-[#3c444c] text-white">
+                      <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
+                        {team2Roster.map(ath => (
+                          <button
+                            key={ath.num}
+                            type="button"
+                            onClick={() => {
+                              setFreeBallSender(ath);
+                              setActiveStep("whoReceivedFreeBall");
+                            }}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${freeBallSender?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-600"}`}
+                          >
+                            <span className="font-bold mr-1">{ath.num}</span> {ath.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* 5. Who received the free ball? */}
+                {/* 5. Who received the free ball? (MHS - White) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoReceivedFreeBall" ? "" : "whoReceivedFreeBall")}
+                    onClick={() => setActiveStep(activeStep === "whoReceivedFreeBall" ? "" : "whoReceivedFreeBall")}
                     className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
                   >
-                    <span>Who received the free ball? <span className="font-normal ml-2 font-mono text-neutral-700">#{freeBallReceiver.num} {freeBallReceiver.name}</span></span>
-                    {activeAccordionStep === "whoReceivedFreeBall" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                    <span>Who received the free ball? <span className="font-normal ml-2 font-mono text-neutral-700">{freeBallReceiver ? `#${freeBallReceiver.num} ${freeBallReceiver.name}` : ""}</span></span>
+                    {activeStep === "whoReceivedFreeBall" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
                   </button>
-                  
-                  {activeAccordionStep === "whoReceivedFreeBall" && (
+                  {activeStep === "whoReceivedFreeBall" && (
                     <div className="p-3 bg-white text-neutral-900">
                       <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
                         {mhsRoster.map(ath => (
@@ -791,46 +924,60 @@ export default function VolleyballTaggerWorkspace({
                             type="button"
                             onClick={() => {
                               setFreeBallReceiver(ath);
-                              setActiveAccordionStep("whoAssisted");
+                              setActiveStep("whoAssisted");
                             }}
-                            className="p-1.5 text-left font-sans text-[11px] hover:bg-neutral-200 rounded cursor-pointer"
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${freeBallReceiver?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
                           >
                             <span className="font-bold mr-1">{ath.num}</span> {ath.name}
                           </button>
                         ))}
                       </div>
-                      <div className="mt-3 pt-2 border-t border-neutral-200 flex justify-between text-[11px] text-neutral-700">
-                        <button type="button" className="hover:underline">Unknown Athlete</button>
-                        <button type="button" className="flex items-center gap-1 hover:underline"><Pencil className="w-3 h-3" /> Edit Roster</button>
+                    </div>
+                  )}
+                </div>
+
+                {/* 6. Who assisted? (MHS - White) */}
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveStep(activeStep === "whoAssisted" ? "" : "whoAssisted")}
+                    className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
+                  >
+                    <span>Who assisted? <span className="font-normal ml-2 font-mono text-neutral-700">{assistingPlayer ? `#${assistingPlayer.num} ${assistingPlayer.name}` : ""}</span></span>
+                    {activeStep === "whoAssisted" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                  </button>
+                  {activeStep === "whoAssisted" && (
+                    <div className="p-3 bg-white text-neutral-900">
+                      <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
+                        {mhsRoster.map(ath => (
+                          <button
+                            key={ath.num}
+                            type="button"
+                            onClick={() => {
+                              setAssistingPlayer(ath);
+                              setActiveStep("whoGotKill");
+                            }}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${assistingPlayer?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
+                          >
+                            <span className="font-bold mr-1">{ath.num}</span> {ath.name}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* 6. Who assisted? */}
+                {/* 7. Who got the kill? (MHS - White) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoAssisted" ? "" : "whoAssisted")}
+                    onClick={() => setActiveStep(activeStep === "whoGotKill" ? "" : "whoGotKill")}
                     className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
                   >
-                    <span>Who assisted? <span className="font-normal ml-2 font-mono text-neutral-700">#{assistingPlayer.num} {assistingPlayer.name}</span></span>
-                    {activeAccordionStep === "whoAssisted" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                    <span>Who got the kill? <span className="font-normal ml-2 font-mono text-neutral-700">{killingPlayer ? `#${killingPlayer.num}` : ""}</span></span>
+                    {activeStep === "whoGotKill" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
                   </button>
-                </div>
-
-                {/* 7. Who got the kill? */}
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoGotKill" ? "" : "whoGotKill")}
-                    className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
-                  >
-                    <span>Who got the kill? <span className="font-normal ml-2 font-mono text-neutral-700">#{killingPlayer.num}</span></span>
-                    {activeAccordionStep === "whoGotKill" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
-                  </button>
-                  
-                  {activeAccordionStep === "whoGotKill" && (
+                  {activeStep === "whoGotKill" && (
                     <div className="p-3 bg-white text-neutral-900">
                       <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
                         {mhsRoster.map(ath => (
@@ -839,34 +986,30 @@ export default function VolleyballTaggerWorkspace({
                             type="button"
                             onClick={() => {
                               setKillingPlayer(ath);
-                              setActiveAccordionStep("attackLocation");
+                              setActiveStep("attackLocation");
                             }}
-                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${killingPlayer.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-200"}`}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${killingPlayer?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
                           >
                             <span className="font-bold mr-1">{ath.num}</span> {ath.name}
                           </button>
                         ))}
                       </div>
-                      <div className="mt-3 pt-2 border-t border-neutral-200 flex justify-between text-[11px] text-neutral-700">
-                        <button type="button" className="hover:underline">Unknown Athlete</button>
-                        <button type="button" className="flex items-center gap-1 hover:underline"><Pencil className="w-3 h-3" /> Edit Roster</button>
-                      </div>
                     </div>
                   )}
                 </div>
 
-                {/* 8. Where did the attack occur? (2D Court Vector with Dashed Zones) */}
+                {/* 8. Where did the attack occur? (MHS - White) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "attackLocation" ? "" : "attackLocation")}
+                    onClick={() => setActiveStep(activeStep === "attackLocation" ? "" : "attackLocation")}
                     className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
                   >
                     <span>Where did the attack occur?</span>
-                    {activeAccordionStep === "attackLocation" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                    {activeStep === "attackLocation" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
                   </button>
                   
-                  {activeAccordionStep === "attackLocation" && (
+                  {activeStep === "attackLocation" && (
                     <div className="p-4 bg-white text-neutral-900 flex flex-col gap-3">
                       
                       {/* Deflected Checkbox */}
@@ -883,89 +1026,54 @@ export default function VolleyballTaggerWorkspace({
                         <MoveHorizontal className="w-4 h-4 text-neutral-500" />
                       </div>
 
-                      {/* 2D Court SVG (Rounded Grey Container, Solid Boundary, Net, 3m lines, Dashed Zones) */}
+                      {/* 2D Court SVG with Frontcourt grey fill, Solid 3m lines, Dashed zone lines */}
                       <div className="relative rounded-lg bg-[#cfd4dc] p-3 shadow-inner">
                         <svg
                           viewBox="0 0 240 120"
-                          className="w-full h-32 cursor-crosshair select-none bg-white rounded-sm shadow-xs"
-                          onClick={(e) => {
-                            const rect = e.currentTarget.getBoundingClientRect();
-                            const x = Math.round(((e.clientX - rect.left) / rect.width) * 240);
-                            const y = Math.round(((e.clientY - rect.top) / rect.height) * 120);
-
-                            if (!attackStart) {
-                              setAttackStart({ x, y });
-                            } else if (!attackEnd) {
-                              setAttackEnd({ x, y });
-                            } else {
-                              // Reset vector
-                              setAttackStart({ x, y });
-                              setAttackEnd(null);
-                            }
-                          }}
+                          className="w-full h-36 cursor-crosshair select-none bg-[#cfd4dc]"
+                          onClick={handleCourtClick}
                         >
-                          {/* Court Perimeter Rectangle */}
-                          <rect x="15" y="15" width="210" height="90" fill="#ffffff" stroke="#000000" strokeWidth="2" />
-                          
-                          {/* Center Net Line */}
-                          <line x1="120" y1="10" x2="120" y2="110" stroke="#000000" strokeWidth="3.5" />
-                          
-                          {/* Solid 3-meter Attack Lines */}
-                          <line x1="85" y1="15" x2="85" y2="105" stroke="#000000" strokeWidth="1.5" />
-                          <line x1="155" y1="15" x2="155" y2="105" stroke="#000000" strokeWidth="1.5" />
+                          {/* Left Half Court */}
+                          <rect x="20" y="15" width="95" height="90" fill="#ffffff" stroke="#000000" strokeWidth="2" />
+                          {/* Left Frontcourt (between 3m line and net) */}
+                          <rect x="83" y="15" width="32" height="90" fill="#e8ecef" stroke="#000000" strokeWidth="2" />
 
-                          {/* Dashed Zone Grid Lines (2 Horizontal) */}
-                          <line x1="15" y1="45" x2="225" y2="45" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
-                          <line x1="15" y1="75" x2="225" y2="75" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+                          {/* Right Half Court */}
+                          <rect x="125" y="15" width="95" height="90" fill="#ffffff" stroke="#000000" strokeWidth="2" />
+                          {/* Right Frontcourt (between net and 3m line) */}
+                          <rect x="125" y="15" width="32" height="90" fill="#e8ecef" stroke="#000000" strokeWidth="2" />
 
-                          {/* Dashed Zone Grid Lines (Vertical on each side) */}
-                          <line x1="50" y1="15" x2="50" y2="105" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
-                          <line x1="190" y1="15" x2="190" y2="105" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+                          {/* Thick Center Net (extending slightly beyond court top and bottom) */}
+                          <line x1="120" y1="8" x2="120" y2="112" stroke="#000000" strokeWidth="4" />
 
-                          {/* Marker Arrow Head */}
-                          <defs>
-                            <marker id="arrowhead" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                              <path d="M 0 1 L 9 5 L 0 9 z" fill="#000000" />
-                            </marker>
-                          </defs>
+                          {/* Dashed Zone Lines (2 horizontal across the whole diagram) */}
+                          <line x1="0" y1="45" x2="240" y2="45" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+                          <line x1="0" y1="75" x2="240" y2="75" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
 
-                          {/* Connecting Arrow Vector */}
-                          {attackStart && attackEnd && (
-                            <line
-                              x1={attackStart.x}
-                              y1={attackStart.y}
-                              x2={attackEnd.x}
-                              y2={attackEnd.y}
-                              stroke="#000000"
-                              strokeWidth="2"
-                              markerEnd="url(#arrowhead)"
-                            />
-                          )}
-
-                          {/* Origin Blue Dot */}
-                          {attackStart && (
-                            <circle cx={attackStart.x} cy={attackStart.y} r="4.5" fill="#0284c7" stroke="#ffffff" strokeWidth="1.5" />
-                          )}
+                          {/* Dashed Zone Lines (Vertical across each 3m section) */}
+                          <line x1="51" y1="0" x2="51" y2="120" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+                          <line x1="83" y1="0" x2="83" y2="120" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+                          <line x1="157" y1="0" x2="157" y2="120" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+                          <line x1="189" y1="0" x2="189" y2="120" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
 
                           {/* Landing Black Cross (+) */}
-                          {attackEnd && (
-                            <g transform={`translate(${attackEnd.x}, ${attackEnd.y})`}>
-                              <line x1="-5" y1="0" x2="5" y2="0" stroke="#000000" strokeWidth="2" />
-                              <line x1="0" y1="-5" x2="0" y2="5" stroke="#000000" strokeWidth="2" />
+                          {attackLocation ? (
+                            <g transform={`translate(${attackLocation.x}, ${attackLocation.y})`}>
+                              <line x1="-7" y1="0" x2="7" y2="0" stroke="#000000" strokeWidth="2.5" />
+                              <line x1="0" y1="-7" x2="0" y2="7" stroke="#000000" strokeWidth="2.5" />
+                            </g>
+                          ) : (
+                            <g transform="translate(104, 52)">
+                              <line x1="-7" y1="0" x2="7" y2="0" stroke="#000000" strokeWidth="2.5" />
+                              <line x1="0" y1="-7" x2="0" y2="7" stroke="#000000" strokeWidth="2.5" />
                             </g>
                           )}
                         </svg>
                       </div>
 
-                      {/* Finish & Save Tag Button */}
-                      <button
-                        type="button"
-                        onClick={handleFinishAttackKillTag}
-                        className="w-full py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded text-xs cursor-pointer shadow transition-all flex items-center justify-center gap-1.5 mt-1"
-                      >
-                        <Check className="w-4 h-4" />
-                        <span>Save & Complete Attack Kill</span>
-                      </button>
+                      <div className="text-[11px] text-neutral-500 text-center italic">
+                        Click on the court to place the landing mark (+) and complete tag
+                      </div>
 
                     </div>
                   )}
@@ -977,13 +1085,13 @@ export default function VolleyballTaggerWorkspace({
           )}
 
           {/* ========================================================= */}
-          {/* CASE B: "POST ATTACK KILL" PANEL (Video Frame 10 at 50s)  */}
+          {/* MODE 3: "POST ATTACK KILL" PANEL (Video Frame 10 at 50s)  */}
           {/* ========================================================= */}
-          {taggerMode === "POST_ATTACK_KILL" && (
+          {taggerMode === "POST_KILL" && (
             <div className="flex-1 flex flex-col justify-between overflow-hidden">
               <div className="flex-1 flex flex-col">
                 
-                {/* Subheader with MHS Attack Kill & Undo */}
+                {/* Subheader */}
                 <div className="bg-white border-b border-neutral-300 px-4 py-2 flex items-center justify-between text-neutral-900 font-bold text-xs flex-shrink-0">
                   <span className="font-extrabold">{currentActionTitle}</span>
                   <button
@@ -996,7 +1104,7 @@ export default function VolleyballTaggerWorkspace({
                   </button>
                 </div>
 
-                {/* Two Columns: MHS (White) vs Team 2 (Dark) */}
+                {/* Dual Columns: MHS (White) vs Team 2 (Dark) */}
                 <div className="flex-1 grid grid-cols-2">
                   
                   {/* Left Column: MHS */}
@@ -1007,7 +1115,7 @@ export default function VolleyballTaggerWorkspace({
                     <div className="flex flex-col">
                       <button
                         type="button"
-                        onClick={handleStartMhsServe}
+                        onClick={handleStartMhsServeError}
                         className="w-full text-left px-4 py-3 bg-white hover:bg-slate-100 text-neutral-900 font-bold border-b border-neutral-300 cursor-pointer transition-colors shadow-2xs"
                       >
                         Serve
@@ -1068,7 +1176,7 @@ export default function VolleyballTaggerWorkspace({
           )}
 
           {/* ========================================================= */}
-          {/* CASE C: "SERVE ERROR" ACCORDION FLOW (Video Frame 11 at 55s) */}
+          {/* MODE 4: "SERVE ERROR" FLOW (Video Frame 11 at 55s)        */}
           {/* ========================================================= */}
           {taggerMode === "SERVE_ERROR" && (
             <div className="flex-1 flex flex-col overflow-hidden">
@@ -1080,7 +1188,7 @@ export default function VolleyballTaggerWorkspace({
                 </span>
               </div>
 
-              {/* Action Banner + Undo */}
+              {/* Subheader */}
               <div className="bg-white border-b border-neutral-300 px-4 py-2 flex items-center justify-between text-neutral-900 font-bold text-xs flex-shrink-0">
                 <span className="font-extrabold">{currentActionTitle}</span>
                 <button
@@ -1093,7 +1201,7 @@ export default function VolleyballTaggerWorkspace({
                 </button>
               </div>
 
-              {/* Single Expanded Item: Who served the error? */}
+              {/* Question: Who served the error? */}
               <div className="flex-1 bg-white p-4 flex flex-col justify-between overflow-y-auto">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between font-bold text-neutral-900 text-xs pb-2 border-b border-neutral-200">
@@ -1101,7 +1209,7 @@ export default function VolleyballTaggerWorkspace({
                     <ChevronUp className="w-4 h-4 text-neutral-500" />
                   </div>
 
-                  {/* 3-Column Roster Grid matching video exactly */}
+                  {/* 3-Column Roster Grid */}
                   <div className="grid grid-cols-3 gap-y-3 gap-x-1 text-neutral-900 text-xs">
                     {mhsRoster.map(ath => (
                       <button
@@ -1127,9 +1235,9 @@ export default function VolleyballTaggerWorkspace({
           )}
 
           {/* ========================================================= */}
-          {/* CASE D: "POST SERVE ERROR" PANEL (Video Frame 12 at 60s)  */}
+          {/* MODE 5: "POST SERVE ERROR" PANEL (Video Frame 12 at 60s)  */}
           {/* ========================================================= */}
-          {taggerMode === "POST_SERVE_ERROR" && (
+          {taggerMode === "POST_ERROR" && (
             <div className="flex-1 flex flex-col justify-between overflow-hidden">
               <div className="flex-1 flex flex-col">
                 
@@ -1175,6 +1283,8 @@ export default function VolleyballTaggerWorkspace({
                       <button
                         type="button"
                         onClick={() => {
+                          setTaggerMode("DUAL_INITIAL");
+                          setCurrentActionTitle("Team 2 Serve");
                           triggerAlert("info", "Team 2 Serve flow initiated");
                         }}
                         className="w-full text-left px-4 py-3 bg-white hover:bg-slate-100 text-neutral-900 font-bold border-b border-neutral-600 cursor-pointer transition-colors"
@@ -1219,126 +1329,12 @@ export default function VolleyballTaggerWorkspace({
             </div>
           )}
 
-          {/* ========================================================= */}
-          {/* CASE E: INITIAL DUAL COLUMN KEYPAD (Frame 0 at 00s)       */}
-          {/* ========================================================= */}
-          {taggerMode === "DUAL_COLUMN_INITIAL" && (
-            <div className="flex-1 flex flex-col justify-between overflow-hidden">
-              <div className="flex-1 flex flex-col">
-                
-                {/* Subheader */}
-                <div className="bg-white border-b border-neutral-300 px-4 py-2 flex items-center justify-between text-neutral-900 font-bold text-xs flex-shrink-0">
-                  <span className="font-extrabold">MHS Serve</span>
-                  <button
-                    type="button"
-                    onClick={handleUndo}
-                    className="flex items-center gap-1 text-[11px] text-neutral-700 hover:text-black cursor-pointer font-semibold"
-                  >
-                    <Undo className="w-3.5 h-3.5" />
-                    <span>Undo (U)</span>
-                  </button>
-                </div>
-
-                {/* Dual Columns */}
-                <div className="flex-1 grid grid-cols-2">
-                  
-                  {/* Left Column: MHS */}
-                  <div className="bg-[#f0f2f5] border-r border-neutral-300 flex flex-col">
-                    <div className="p-3 font-extrabold text-neutral-900 text-sm border-b border-neutral-300 bg-white">
-                      MHS
-                    </div>
-                    <div className="flex flex-col">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setHomeScore(prev => prev + 1);
-                          triggerAlert("success", "Point MHS! Ace logged.");
-                        }}
-                        className="w-full text-left px-4 py-3 bg-white hover:bg-slate-100 text-neutral-900 font-bold border-b border-neutral-300 cursor-pointer transition-colors"
-                      >
-                        Ace
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleStartMhsServe}
-                        className="w-full text-left px-4 py-3 bg-white hover:bg-slate-100 text-neutral-900 font-bold border-b border-neutral-300 cursor-pointer transition-colors"
-                      >
-                        Serve Error
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => triggerAlert("info", "Violation logged for MHS")}
-                        className="w-full text-left px-4 py-3 bg-white hover:bg-slate-100 text-neutral-900 font-bold border-b border-neutral-300 cursor-pointer transition-colors"
-                      >
-                        Violation
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Right Column: Team 2 */}
-                  <div className="bg-[#9da3a8] flex flex-col">
-                    <div className="p-3 font-extrabold text-white text-sm bg-[#4a5259] border-b border-neutral-600">
-                      Team 2
-                    </div>
-                    <div className="flex flex-col">
-                      <button
-                        type="button"
-                        onClick={() => setTaggerMode("COMPLETE_THE_TAG")}
-                        className="w-full text-left px-4 py-3 bg-[#6b757e] hover:bg-[#78838d] text-white font-bold border-b border-neutral-600 cursor-pointer transition-colors"
-                      >
-                        Serve Receive
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => triggerAlert("info", "Over Pass logged for Team 2")}
-                        className="w-full text-left px-4 py-3 bg-[#4a5259] hover:bg-[#565e66] text-white font-bold border-b border-neutral-600 cursor-pointer transition-colors"
-                      >
-                        Over Pass
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => triggerAlert("info", "Violation logged for Team 2")}
-                        className="w-full text-left px-4 py-3 bg-[#4a5259] hover:bg-[#565e66] text-white font-bold border-b border-neutral-600 cursor-pointer transition-colors"
-                      >
-                        Violation
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-
-              {/* Bottom Buttons */}
-              <div className="p-3 bg-[#111417] border-t border-neutral-800 flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowProblemReportModal(true)}
-                  className="w-full py-2 bg-[#262c33] hover:bg-[#323942] text-slate-300 font-bold text-xs rounded transition-colors"
-                >
-                  Problem Report
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onSave) onSave(timelineTags);
-                    onClose();
-                  }}
-                  className="w-full py-2 bg-[#1b2025] hover:bg-[#252c33] text-slate-200 font-bold text-xs rounded border border-neutral-700 transition-colors"
-                >
-                  Save and Exit
-                </button>
-              </div>
-
-            </div>
-          )}
-
         </div>
 
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* 3. MODALS (Coach Notes, Options, Problem Report)               */}
+      {/* 3. MODALS                                                     */}
       {/* ------------------------------------------------------------- */}
 
       {/* A. Coach Notes Modal */}
@@ -1357,7 +1353,7 @@ export default function VolleyballTaggerWorkspace({
               value={coachNotesText}
               onChange={(e) => setCoachNotesText(e.target.value)}
               rows={4}
-              placeholder="Enter specific rotation adjustments, blocking schemes, or server notes for coaches..."
+              placeholder="Enter rotation notes or specific coaching observations..."
               className="w-full bg-neutral-900 border border-neutral-800 rounded p-2.5 text-xs text-white focus:outline-none focus:border-orange-500 font-sans"
             />
 
