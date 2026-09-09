@@ -22,8 +22,7 @@ import {
   SlidersHorizontal,
   MoveHorizontal,
   Plus,
-  Trash2,
-  CheckCircle2
+  Trash2
 } from "lucide-react";
 
 export interface Athlete {
@@ -66,11 +65,9 @@ export interface TimelineTag {
   label: string;
   timeSec: number;
   trackIndex: 0 | 1 | 2 | 3;
-  theme: "light" | "dark" | "highlight";
+  theme: "light" | "dark" | "caliper";
   team: "home" | "away";
-  rallyId?: string;
-  action?: string;
-  player?: string;
+  isCaliper?: boolean;
 }
 
 interface VolleyballTaggerWorkspaceProps {
@@ -88,15 +85,15 @@ export default function VolleyballTaggerWorkspace({
   onSave,
   triggerAlert = () => {}
 }: VolleyballTaggerWorkspaceProps) {
-  // 1. Dynamic Match & Score State
+  // 1. Match State
   const [homeTeam, setHomeTeam] = useState(match?.homeTeam || "MHS");
   const [awayTeam, setAwayTeam] = useState(match?.awayTeam || "Team 2");
-  const [homeScore, setHomeScore] = useState(match?.setsWonHome !== undefined ? 10 : 10);
-  const [awayScore, setAwayScore] = useState(match?.setsWonAway !== undefined ? 5 : 5);
+  const [homeScore, setHomeScore] = useState(10);
+  const [awayScore, setAwayScore] = useState(5);
   const [period, setPeriod] = useState("3rd");
   const [servingTeam, setServingTeam] = useState<"home" | "away">("home");
 
-  // Rosters (Uses match.roster if available or demo rosters)
+  // Rosters
   const [homeRoster, setHomeRoster] = useState<Athlete[]>(() => {
     if (match?.roster && match.roster.length > 0) {
       return match.roster.map((r: any, idx: number) => ({
@@ -111,13 +108,13 @@ export default function VolleyballTaggerWorkspace({
 
   // Video playback states
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(5420); // 1:30:20 in seconds
-  const [totalDuration, setTotalDuration] = useState(10800); // 3:00:00 in seconds
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [currentTime, setCurrentTime] = useState(5420); // 1:30:20
+  const [totalDuration, setTotalDuration] = useState(10800); // 3:00:00
   const [isMuted, setIsMuted] = useState(true);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
-  // Timeline resize height state
+  // Timeline resize height
   const [timelineHeight, setTimelineHeight] = useState(170);
 
   // Modals
@@ -130,21 +127,14 @@ export default function VolleyballTaggerWorkspace({
   const [showEndSetMenu, setShowEndSetMenu] = useState(false);
   const [showRosterModal, setShowRosterModal] = useState(false);
 
-  // =========================================================================
-  // WORKSPACE MODES:
-  // "DUAL_KEYPAD": Main dual column (Serve, Ace, Error, Violation vs Receive, Overpass)
-  // "ACCORDION_RALLY": Complete the Tag workflow for current rally contacts
-  // "ERROR_PROMPT": Modal / panel to pick who made the serve error or violation
-  // =========================================================================
-  const [taggerMode, setTaggerMode] = useState<"DUAL_KEYPAD" | "ACCORDION_RALLY" | "ERROR_PROMPT">("DUAL_KEYPAD");
-  const [activeAccordionStep, setActiveAccordionStep] = useState<string>("whoServed");
-  const [errorPromptContext, setErrorPromptContext] = useState<{ type: "serveError" | "violation"; team: "home" | "away" }>({
-    type: "serveError",
-    team: "home"
-  });
+  // Modes: "DUAL_KEYPAD" | "WATERFALL_RALLY" | "SERVE_ERROR_PROMPT"
+  const [taggerMode, setTaggerMode] = useState<"DUAL_KEYPAD" | "WATERFALL_RALLY" | "SERVE_ERROR_PROMPT">("DUAL_KEYPAD");
+  
+  // Waterfall Step: "whoServed" | "whoReceived" | "rateReceive" | "whoSentFreeBall" | "whoReceivedFreeBall" | "whoAssisted" | "whoGotKill" | "attackLocation"
+  const [activeWaterfallStep, setActiveWaterfallStep] = useState<string>("whoServed");
 
-  // Current rally in progress data
-  const [currentRally, setCurrentRally] = useState<{
+  // Current Waterfall Rally Selections
+  const [rallySelections, setRallySelections] = useState<{
     server: Athlete | null;
     receiver: Athlete | null;
     receiveRating: number | null;
@@ -152,30 +142,26 @@ export default function VolleyballTaggerWorkspace({
     freeBallReceiver: Athlete | null;
     assistingPlayer: Athlete | null;
     killingPlayer: Athlete | null;
-    attackOutcome: "Kill" | "Error" | "InPlay";
     attackLocation: { x: number; y: number } | null;
     attackDeflected: boolean;
-    winningTeam: "home" | "away" | null;
   }>({
-    server: { num: 9, name: "K. Sable" },
-    receiver: { num: 15, name: "Unknown" },
-    receiveRating: 1,
-    freeBallSender: { num: 2, name: "M. Barfield" },
-    freeBallReceiver: { num: 9, name: "K. Sable" },
-    assistingPlayer: { num: 2, name: "A. Bragg" },
-    killingPlayer: { num: 18, name: "Unknown" },
-    attackOutcome: "Kill",
-    attackLocation: { x: 104, y: 52 },
-    attackDeflected: false,
-    winningTeam: "home"
+    server: null,
+    receiver: null,
+    receiveRating: null,
+    freeBallSender: null,
+    freeBallReceiver: null,
+    assistingPlayer: null,
+    killingPlayer: null,
+    attackLocation: null,
+    attackDeflected: false
   });
 
-  // Active highlighted tag in timeline
-  const [activeTagId, setActiveTagId] = useState<string>("");
+  // Base timestamp for current rally
+  const [rallyBaseTime, setRallyBaseTime] = useState<number>(5420);
 
-  // Timeline tags list initialized with baseline tags
+  // Multi-track timeline tags (Pre-populated with Rally 1 from the video)
   const [timelineTags, setTimelineTags] = useState<TimelineTag[]>([
-    // Rally 1
+    // === RALLY 1 (01:29:30 - 01:30:00) ===
     { id: "r1_1", label: "Serve #10", timeSec: 5370, trackIndex: 0, theme: "light", team: "home" },
     { id: "r1_2", label: "Dig #9", timeSec: 5378, trackIndex: 0, theme: "light", team: "away" },
     { id: "r1_3", label: "Free Ball #1", timeSec: 5384, trackIndex: 0, theme: "dark", team: "away" },
@@ -199,6 +185,9 @@ export default function VolleyballTaggerWorkspace({
     { id: "r1_18", label: "Dig #10", timeSec: 5399, trackIndex: 3, theme: "dark", team: "away" }
   ]);
 
+  // Active highlighted tag ID
+  const [activeCaliperTagId, setActiveCaliperTagId] = useState<string>("");
+
   // History stack for Undo
   const [historyStack, setHistoryStack] = useState<any[]>([]);
 
@@ -214,7 +203,6 @@ export default function VolleyballTaggerWorkspace({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      
       if (e.key === "u" || e.key === "U") {
         handleUndo();
       } else if (e.code === "Space") {
@@ -259,7 +247,8 @@ export default function VolleyballTaggerWorkspace({
         awayScore,
         servingTeam,
         taggerMode,
-        activeAccordionStep,
+        activeWaterfallStep,
+        rallySelections: { ...rallySelections },
         timelineTags: [...timelineTags]
       }
     ]);
@@ -276,53 +265,250 @@ export default function VolleyballTaggerWorkspace({
     setAwayScore(last.awayScore);
     setServingTeam(last.servingTeam);
     setTaggerMode(last.taggerMode);
-    setActiveAccordionStep(last.activeAccordionStep);
+    setActiveWaterfallStep(last.activeWaterfallStep);
+    setRallySelections(last.rallySelections);
     setTimelineTags(last.timelineTags);
     triggerAlert("info", "Last action undone (U)");
   };
 
-  // -------------------------------------------------------------
-  // DYNAMIC TAGGING ACTIONS
-  // -------------------------------------------------------------
+  // =========================================================================
+  // WATERFALL MODEL: CLICK RIGHT OPTION -> TAG DROPS IMMEDIATELY BELOW
+  // =========================================================================
 
-  // 1. ACE LOGGED
-  const handleLogAce = (scoringTeam: "home" | "away") => {
+  // 1. Initiate Rally Waterfall from Keypad
+  const handleStartWaterfallRally = () => {
     saveHistorySnapshot();
-    const serverRoster = scoringTeam === "home" ? homeRoster : awayRoster;
-    const server = serverRoster[0] || { num: 1, name: "Server" };
-    
-    if (scoringTeam === "home") {
+    setRallyBaseTime(currentTime);
+    setRallySelections({
+      server: null,
+      receiver: null,
+      receiveRating: null,
+      freeBallSender: null,
+      freeBallReceiver: null,
+      assistingPlayer: null,
+      killingPlayer: null,
+      attackLocation: null,
+      attackDeflected: false
+    });
+    setTaggerMode("WATERFALL_RALLY");
+    setActiveWaterfallStep("whoServed");
+    setActiveCaliperTagId("");
+  };
+
+  // STEP 1: Who Served? -> DROPS TAG ON TRACK 1 (Row 1)
+  const handleSelectServer = (ath: Athlete) => {
+    saveHistorySnapshot();
+    setRallySelections(prev => ({ ...prev, server: ath }));
+
+    // Drop Tag on Track 0 (Row 1)
+    const newTagId = `tag_srv_${Date.now()}`;
+    const newTag: TimelineTag = {
+      id: newTagId,
+      label: `Serve #${ath.num}`,
+      timeSec: rallyBaseTime,
+      trackIndex: 0,
+      theme: servingTeam === "home" ? "light" : "dark",
+      team: servingTeam
+    };
+
+    setTimelineTags(prev => [...prev, newTag]);
+    setActiveCaliperTagId(newTagId);
+
+    // Auto-advance to Step 2
+    setActiveWaterfallStep("whoReceived");
+  };
+
+  // STEP 2: Who Received? -> DROPS TAG ON TRACK 2 (Row 2, right below Serve!)
+  const handleSelectReceiver = (ath: Athlete) => {
+    saveHistorySnapshot();
+    setRallySelections(prev => ({ ...prev, receiver: ath }));
+
+    // Drop Tag on Track 1 (Row 2 - WATERFALL STEP DOWN)
+    const newTagId = `tag_rec_${Date.now()}`;
+    const receivingTeam = servingTeam === "home" ? "away" : "home";
+    const newTag: TimelineTag = {
+      id: newTagId,
+      label: `Serve Receive #${ath.num}`,
+      timeSec: rallyBaseTime + 2,
+      trackIndex: 1,
+      theme: receivingTeam === "home" ? "light" : "dark",
+      team: receivingTeam
+    };
+
+    setTimelineTags(prev => [...prev, newTag]);
+    setActiveCaliperTagId(newTagId);
+
+    // Auto-advance to Step 3
+    setActiveWaterfallStep("rateReceive");
+  };
+
+  // STEP 3: Rate Receive -> Attaches rating, advances to Free Ball Sender
+  const handleRateReceive = (rating: number) => {
+    saveHistorySnapshot();
+    setRallySelections(prev => ({ ...prev, receiveRating: rating }));
+    setActiveWaterfallStep("whoSentFreeBall");
+  };
+
+  // STEP 4: Who sent Free Ball? -> DROPS TAG ON TRACK 3 (Row 3, right below Receive!)
+  const handleSelectFreeBallSender = (ath: Athlete) => {
+    saveHistorySnapshot();
+    setRallySelections(prev => ({ ...prev, freeBallSender: ath }));
+
+    // Drop Tag on Track 2 (Row 3 - WATERFALL STEP DOWN)
+    const newTagId = `tag_fb_${Date.now()}`;
+    const senderTeam = servingTeam === "home" ? "away" : "home";
+    const newTag: TimelineTag = {
+      id: newTagId,
+      label: `Free Ball #${ath.num}`,
+      timeSec: rallyBaseTime + 4,
+      trackIndex: 2,
+      theme: senderTeam === "home" ? "light" : "dark",
+      team: senderTeam
+    };
+
+    setTimelineTags(prev => [...prev, newTag]);
+    setActiveCaliperTagId(newTagId);
+
+    // Auto-advance to Step 5
+    setActiveWaterfallStep("whoReceivedFreeBall");
+  };
+
+  // STEP 5: Who received Free Ball? -> DROPS TAG ON TRACK 4 (Row 4, right below Free Ball!)
+  const handleSelectFreeBallReceiver = (ath: Athlete) => {
+    saveHistorySnapshot();
+    setRallySelections(prev => ({ ...prev, freeBallReceiver: ath }));
+
+    // Drop Tag on Track 3 (Row 4 - WATERFALL STEP DOWN)
+    const newTagId = `tag_fbr_${Date.now()}`;
+    const receiverTeam = servingTeam;
+    const newTag: TimelineTag = {
+      id: newTagId,
+      label: `Free Ball Receive #${ath.num}`,
+      timeSec: rallyBaseTime + 6,
+      trackIndex: 3,
+      theme: receiverTeam === "home" ? "light" : "dark",
+      team: receiverTeam
+    };
+
+    setTimelineTags(prev => [...prev, newTag]);
+    setActiveCaliperTagId(newTagId);
+
+    // Auto-advance to Step 6
+    setActiveWaterfallStep("whoAssisted");
+  };
+
+  // STEP 6: Who Assisted? -> DROPS TAG ON TRACK 1 (Row 1, next to Serve!)
+  const handleSelectAssistingPlayer = (ath: Athlete) => {
+    saveHistorySnapshot();
+    setRallySelections(prev => ({ ...prev, assistingPlayer: ath }));
+
+    // Drop Tag on Track 0 (Row 1 - Set)
+    const newTagId = `tag_set_${Date.now()}`;
+    const newTag: TimelineTag = {
+      id: newTagId,
+      label: `Set #${ath.num}`,
+      timeSec: rallyBaseTime + 8,
+      trackIndex: 0,
+      theme: servingTeam === "home" ? "light" : "dark",
+      team: servingTeam
+    };
+
+    setTimelineTags(prev => [...prev, newTag]);
+    setActiveCaliperTagId(newTagId);
+
+    // Auto-advance to Step 7
+    setActiveWaterfallStep("whoGotKill");
+  };
+
+  // STEP 7: Who Got Kill? -> DROPS TAG ON TRACK 2 (Row 2, next to Receive with CALIPER HANDLES!)
+  const handleSelectKillingPlayer = (ath: Athlete) => {
+    saveHistorySnapshot();
+    setRallySelections(prev => ({ ...prev, killingPlayer: ath }));
+
+    // Drop Tag on Track 1 (Row 2 - Attack Kill with Caliper Handles!)
+    const newTagId = `tag_kill_${Date.now()}`;
+    const newTag: TimelineTag = {
+      id: newTagId,
+      label: `Attack Kill #${ath.num}`,
+      timeSec: rallyBaseTime + 10,
+      trackIndex: 1,
+      theme: "caliper",
+      team: servingTeam,
+      isCaliper: true
+    };
+
+    setTimelineTags(prev => [...prev, newTag]);
+    setActiveCaliperTagId(newTagId);
+
+    // Auto-advance to Step 8 (Court Click)
+    setActiveWaterfallStep("attackLocation");
+  };
+
+  // STEP 8: Court Click -> Places '+', LOCKS CALIPER, INCREMENTS SCORE (10 -> 11), FINISHES RALLY!
+  const handleCourtClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * 240);
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * 120);
+
+    setRallySelections(prev => ({ ...prev, attackLocation: { x, y } }));
+
+    // 1. Lock Caliper (remove grab handles)
+    setTimelineTags(prev => prev.map(t => t.id === activeCaliperTagId ? { ...t, theme: servingTeam === "home" ? "light" : "dark", isCaliper: false } : t));
+    setActiveCaliperTagId("");
+
+    // 2. Increment Score (Point MHS: 10 -> 11!)
+    if (servingTeam === "home") {
       setHomeScore(prev => prev + 1);
     } else {
       setAwayScore(prev => prev + 1);
     }
 
-    const newTag: TimelineTag = {
-      id: `ace_${Date.now()}`,
-      label: `Ace #${server.num}`,
-      timeSec: currentTime,
-      trackIndex: 0,
-      theme: scoringTeam === "home" ? "light" : "dark",
-      team: scoringTeam
-    };
+    // 3. Advance Video Timestamp (to 1:30:44)
+    setCurrentTime(prev => prev + 15);
+    if (videoRef.current) {
+      videoRef.current.currentTime = (videoRef.current.currentTime + 15) % (videoRef.current.duration || 60);
+    }
 
-    setTimelineTags(prev => [...prev, newTag]);
-    setActiveTagId(newTag.id);
-    triggerAlert("success", `Point ${scoringTeam === "home" ? homeTeam : awayTeam}! Ace #${server.num} logged.`);
+    // 4. Return to Dual Keypad ready for next serve!
+    setTaggerMode("DUAL_KEYPAD");
+    triggerAlert("success", `Point ${servingTeam === "home" ? homeTeam : awayTeam}! Rally Waterfall completed (11 - 5).`);
   };
 
-  // 2. SERVE ERROR LOGGED -> Prompts athlete selector
+  // SERVE ERROR INITIATION
   const handleInitiateServeError = (erringTeam: "home" | "away") => {
     saveHistorySnapshot();
-    setErrorPromptContext({ type: "serveError", team: erringTeam });
-    setTaggerMode("ERROR_PROMPT");
+    
+    // Add pending Caliper on Track 0 for Serve Error
+    const errorTagId = `tag_err_${Date.now()}`;
+    const newTag: TimelineTag = {
+      id: errorTagId,
+      label: "Serve Error",
+      timeSec: currentTime,
+      trackIndex: 0,
+      theme: "caliper",
+      team: erringTeam,
+      isCaliper: true
+    };
+    setTimelineTags(prev => [...prev, newTag]);
+    setActiveCaliperTagId(errorTagId);
+
+    setTaggerMode("SERVE_ERROR_PROMPT");
   };
 
-  // Selecting who committed the error
-  const handleSelectErrorAthlete = (ath: Athlete) => {
-    const receivingTeam = errorPromptContext.team === "home" ? "away" : "home";
+  // SERVE ERROR PLAYER SELECTED -> FINALIZES TAG, AWARDS POINT TO OPPONENT (11 -> 12 or 5 -> 6), TRANSFERS SERVE!
+  const handleSelectServeErrorAthlete = (ath: Athlete) => {
+    const receivingTeam = servingTeam === "home" ? "away" : "home";
     
-    // Increment score for recipient (Side-out)
+    // Update Tag on timeline to finalized block
+    setTimelineTags(prev => prev.map(t => t.id === activeCaliperTagId ? {
+      ...t,
+      label: `Serve Error #${ath.num}`,
+      theme: servingTeam === "home" ? "light" : "dark",
+      isCaliper: false
+    } : t));
+    setActiveCaliperTagId("");
+
+    // Opponent gets side-out point (11 - 6)
     if (receivingTeam === "home") {
       setHomeScore(prev => prev + 1);
     } else {
@@ -332,96 +518,17 @@ export default function VolleyballTaggerWorkspace({
     // Side-out: serving turns to other team!
     setServingTeam(receivingTeam);
 
-    const newTag: TimelineTag = {
-      id: `err_${Date.now()}`,
-      label: errorPromptContext.type === "serveError" ? `Serve Error #${ath.num}` : `Violation #${ath.num}`,
-      timeSec: currentTime,
-      trackIndex: 0,
-      theme: errorPromptContext.team === "home" ? "light" : "dark",
-      team: errorPromptContext.team
-    };
-
-    setTimelineTags(prev => [...prev, newTag]);
-    setActiveTagId(newTag.id);
-    setTaggerMode("DUAL_KEYPAD");
-    triggerAlert("success", `Point ${receivingTeam === "home" ? homeTeam : awayTeam}! Side-out awarded.`);
-  };
-
-  // 3. SERVE RECEIVE CLICKED -> Ball in play, start rally breakdown
-  const handleStartRallyBreakdown = () => {
-    saveHistorySnapshot();
-    const serverTeam = servingTeam;
-    const recTeam = servingTeam === "home" ? "away" : "home";
-    const serverRoster = serverTeam === "home" ? homeRoster : awayRoster;
-    const recRoster = recTeam === "home" ? homeRoster : awayRoster;
-
-    setCurrentRally({
-      server: serverRoster.find(a => a.num === 9) || serverRoster[0],
-      receiver: recRoster.find(a => a.num === 15) || recRoster[0],
-      receiveRating: 1,
-      freeBallSender: recRoster.find(a => a.num === 2) || recRoster[1],
-      freeBallReceiver: serverRoster.find(a => a.num === 9) || serverRoster[0],
-      assistingPlayer: serverRoster.find(a => a.num === 2) || serverRoster[1],
-      killingPlayer: serverRoster.find(a => a.num === 18) || serverRoster[2],
-      attackOutcome: "Kill",
-      attackLocation: null,
-      attackDeflected: false,
-      winningTeam: serverTeam
-    });
-
-    setTaggerMode("ACCORDION_RALLY");
-    setActiveAccordionStep("attackLocation"); // Open on court by default matching video demo
-  };
-
-  // 4. COURT CLICK -> Places '+' and immediately auto-completes rally
-  const handleCourtClick = (e: React.MouseEvent<SVGSVGElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.round(((e.clientX - rect.left) / rect.width) * 240);
-    const y = Math.round(((e.clientY - rect.top) / rect.height) * 120);
-
-    setCurrentRally(prev => ({ ...prev, attackLocation: { x, y } }));
-
-    // Auto-complete the rally!
-    const rallyWinningTeam = currentRally.winningTeam || servingTeam;
-    
-    // 1. Award point
-    if (rallyWinningTeam === "home") {
-      setHomeScore(prev => prev + 1);
-    } else {
-      setAwayScore(prev => prev + 1);
-    }
-
-    // 2. Side-out if receiver won
-    if (rallyWinningTeam !== servingTeam) {
-      setServingTeam(rallyWinningTeam);
-    }
-
-    // 3. Drop all rally touches onto timeline
-    const baseT = currentTime;
-    const rallyTags: TimelineTag[] = [
-      { id: `t_srv_${Date.now()}`, label: `Serve #${currentRally.server?.num || 9}`, timeSec: baseT, trackIndex: 0, theme: servingTeam === "home" ? "light" : "dark", team: servingTeam },
-      { id: `t_rec_${Date.now()}`, label: `Serve Receive #${currentRally.receiver?.num || 15}`, timeSec: baseT + 2, trackIndex: 1, theme: servingTeam === "home" ? "dark" : "light", team: servingTeam === "home" ? "away" : "home" },
-      { id: `t_fb_${Date.now()}`, label: `Free Ball #${currentRally.freeBallSender?.num || 2}`, timeSec: baseT + 4, trackIndex: 2, theme: "dark", team: "away" },
-      { id: `t_fbr_${Date.now()}`, label: `Free Ball Receive #${currentRally.freeBallReceiver?.num || 9}`, timeSec: baseT + 6, trackIndex: 3, theme: "dark", team: "home" },
-      { id: `t_set_${Date.now()}`, label: `Set #${currentRally.assistingPlayer?.num || 2}`, timeSec: baseT + 8, trackIndex: 0, theme: "light", team: "home" },
-      { id: `t_kill_${Date.now()}`, label: `Attack Kill #${currentRally.killingPlayer?.num || 18}`, timeSec: baseT + 10, trackIndex: 1, theme: "highlight", team: rallyWinningTeam }
-    ];
-
-    setTimelineTags(prev => [...prev, ...rallyTags]);
-    setActiveTagId(rallyTags[rallyTags.length - 1].id);
-
-    // 4. Advance video clock
-    setCurrentTime(prev => prev + 15);
+    // Advance video clock
+    setCurrentTime(prev => prev + 7);
     if (videoRef.current) {
-      videoRef.current.currentTime = (videoRef.current.currentTime + 15) % (videoRef.current.duration || 60);
+      videoRef.current.currentTime = (videoRef.current.currentTime + 7) % (videoRef.current.duration || 60);
     }
 
-    // 5. Automatically return to Dual Keypad ready for next rally
     setTaggerMode("DUAL_KEYPAD");
-    triggerAlert("success", `Point ${rallyWinningTeam === "home" ? homeTeam : awayTeam}! Attack Kill #${currentRally.killingPlayer?.num || 18} confirmed.`);
+    triggerAlert("success", `Point ${receivingTeam === "home" ? homeTeam : awayTeam}! Serve Error #${ath.num}. ${receivingTeam === "home" ? homeTeam : awayTeam} serves next.`);
   };
 
-  // 5. SAVE AND EXIT
+  // Save and Exit
   const handleSaveAndExit = () => {
     if (onSave) {
       onSave(timelineTags);
@@ -441,7 +548,7 @@ export default function VolleyballTaggerWorkspace({
       {/* ------------------------------------------------------------- */}
       <div className="h-10 bg-[#191F24] border-b border-neutral-800 px-4 flex items-center justify-between text-xs flex-shrink-0 z-40">
         
-        {/* Left: Exit & Match Info */}
+        {/* Left: Exit */}
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -498,7 +605,6 @@ export default function VolleyballTaggerWorkspace({
                   type="button"
                   onClick={() => {
                     setShowEndSetMenu(false);
-                    triggerAlert("info", "Match concluded as completed.");
                     handleSaveAndExit();
                   }}
                   className="w-full text-left px-3 py-1.5 hover:bg-neutral-700 transition-colors"
@@ -529,16 +635,16 @@ export default function VolleyballTaggerWorkspace({
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* 2. MAIN BODY: VIDEO + TIMELINE (LEFT) & TAGGING PANEL (RIGHT) */}
+      {/* 2. MAIN BODY: VIDEO + RUNNING TIMELINE & WATERFALL PANEL      */}
       {/* ------------------------------------------------------------- */}
       <div className="flex-1 flex overflow-hidden">
         
         {/* =========================================================== */}
-        {/* LEFT COLUMN: VIDEO PLAYER + SCRUBBER + MULTI-TRACK TIMELINE */}
+        {/* LEFT: RUNNING VIDEO PLAYER + MULTI-TRACK WATERFALL TIMELINE */}
         {/* =========================================================== */}
         <div className="flex-1 flex flex-col min-w-0 bg-black relative">
           
-          {/* A. Video Container */}
+          {/* A. Running Video Container */}
           <div className="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
             
             <video
@@ -547,15 +653,17 @@ export default function VolleyballTaggerWorkspace({
               className="w-full h-full object-contain"
               playsInline
               loop
+              autoPlay
               muted={isMuted}
               onTimeUpdate={() => {
                 if (videoRef.current) {
+                  // Keep timeline clock running in sync with video
                   setCurrentTime(5420 + Math.floor(videoRef.current.currentTime));
                 }
               }}
             />
 
-            {/* B. LED Scoreboard Overlay (Corner) */}
+            {/* B. LED Digital Scoreboard Graphic Overlay */}
             <div className="absolute bottom-4 left-4 z-20 pointer-events-none select-none">
               <div className="bg-black/95 border-2 border-neutral-700 rounded-xs p-2 text-amber-500 font-mono shadow-2xl flex flex-col gap-1 w-32 backdrop-blur-xs">
                 <div className="flex justify-between text-[10px] text-slate-400 font-bold border-b border-neutral-800 pb-0.5 uppercase">
@@ -580,7 +688,7 @@ export default function VolleyballTaggerWorkspace({
           {/* C. Transport Scrubber Bar */}
           <div className="h-10 bg-[#14181c] border-t border-neutral-800 px-4 flex items-center justify-between text-xs text-slate-300 flex-shrink-0 z-10 relative">
             
-            {/* Orange Scrubber line */}
+            {/* Orange Progress Scrubber line */}
             <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-neutral-800">
               <div 
                 className="h-full bg-orange-500 transition-all duration-300"
@@ -656,7 +764,7 @@ export default function VolleyballTaggerWorkspace({
             </div>
           </div>
 
-          {/* D. Multi-Track Timeline */}
+          {/* D. Multi-Track Waterfall Timeline (Running Live) */}
           <div 
             style={{ height: `${timelineHeight}px` }} 
             className="bg-[#14181c] border-t border-neutral-900 px-4 py-2 flex flex-col justify-between flex-shrink-0 relative overflow-hidden transition-all"
@@ -673,30 +781,32 @@ export default function VolleyballTaggerWorkspace({
             {/* Timeline Tracks Area */}
             <div className="relative w-full flex-1 overflow-hidden">
               
-              {/* Playhead */}
+              {/* Running White Playhead with Center Pill Handle */}
               <div 
                 className="absolute top-0 bottom-0 w-[1.5px] bg-white z-30 pointer-events-none flex items-center justify-center"
-                style={{ left: "48%" }}
+                style={{ 
+                  left: `${Math.min(95, Math.max(15, 48 + ((currentTime - 5420) * 0.4)))}%` 
+                }}
               >
                 <div className="w-3 h-4 rounded-xs bg-white text-black text-[8px] flex items-center justify-center font-bold shadow -ml-[0.5px]">
                   ≡
                 </div>
               </div>
 
-              {/* 4 Track Dividers */}
+              {/* 4 Waterfall Tracks (Row 1: Serve/Set, Row 2: Receive/Kill, Row 3: Freeball/Dig, Row 4: Defense/Cover) */}
               <div className="absolute inset-x-0 top-[25%] h-[1px] bg-neutral-900/60" />
               <div className="absolute inset-x-0 top-[50%] h-[1px] bg-neutral-900/60" />
               <div className="absolute inset-x-0 top-[75%] h-[1px] bg-neutral-900/60" />
 
-              {/* Render Tag Blocks */}
+              {/* Render Tag Blocks in Waterfall Order */}
               {timelineTags.map((tag) => {
                 const baseTime = 5420;
                 const offsetSec = tag.timeSec - baseTime;
                 const leftPercent = 48 + (offsetSec * 1.8);
 
-                if (leftPercent < -15 || leftPercent > 115) return null;
+                if (leftPercent < -20 || leftPercent > 120) return null;
 
-                const isFocused = activeTagId === tag.id;
+                const isCaliper = tag.isCaliper || activeCaliperTagId === tag.id;
                 const isPreviousRally = tag.timeSec < 5410;
 
                 return (
@@ -704,14 +814,14 @@ export default function VolleyballTaggerWorkspace({
                     key={tag.id}
                     onClick={() => {
                       setCurrentTime(tag.timeSec);
-                      setActiveTagId(tag.id);
+                      setActiveCaliperTagId(tag.id);
                     }}
-                    className={`absolute text-[10px] font-sans px-1.5 py-0.5 cursor-pointer whitespace-nowrap transition-all border select-none ${
-                      isFocused
-                        ? "bg-white text-black border-2 border-white font-extrabold shadow-[0_0_10px_rgba(255,255,255,0.7)] z-20 scale-105"
+                    className={`absolute text-[10px] font-sans px-1.5 py-0.5 cursor-pointer whitespace-nowrap transition-all select-none flex items-center ${
+                      isCaliper
+                        ? "bg-white text-black border-y-2 border-white font-extrabold z-30 shadow-[0_0_12px_rgba(255,255,255,0.9)]"
                         : tag.theme === "dark"
-                        ? `bg-[#242b33] text-slate-100 border-neutral-700 ${isPreviousRally ? "opacity-50" : "opacity-95"}`
-                        : `bg-[#e6ebf0] text-neutral-950 border-neutral-300 font-semibold ${isPreviousRally ? "opacity-50" : "opacity-100"}`
+                        ? `bg-[#242b33] text-slate-100 border border-neutral-700 ${isPreviousRally ? "opacity-50" : "opacity-95"}`
+                        : `bg-[#e6ebf0] text-neutral-950 border border-neutral-300 font-semibold ${isPreviousRally ? "opacity-50" : "opacity-100"}`
                     }`}
                     style={{
                       top: `${tag.trackIndex * 26}px`,
@@ -720,7 +830,21 @@ export default function VolleyballTaggerWorkspace({
                       lineHeight: "16px"
                     }}
                   >
-                    {tag.label}
+                    {/* Left Caliper Grab Handle */}
+                    {isCaliper && (
+                      <div className="w-1.5 h-full bg-white border-r border-neutral-400 flex items-center justify-center mr-1 text-[7px] font-bold text-neutral-700">
+                        |||
+                      </div>
+                    )}
+
+                    <span>{tag.label}</span>
+
+                    {/* Right Caliper Grab Handle */}
+                    {isCaliper && (
+                      <div className="w-1.5 h-full bg-white border-l border-neutral-400 flex items-center justify-center ml-1 text-[7px] font-bold text-neutral-700">
+                        |||
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -740,12 +864,12 @@ export default function VolleyballTaggerWorkspace({
         </div>
 
         {/* =========================================================== */}
-        {/* RIGHT COLUMN: TAGGING PANEL                                 */}
+        {/* RIGHT COLUMN: TAGGING PANEL WITH INTERACTIVE OPTIONS        */}
         {/* =========================================================== */}
         <div className="w-[430px] bg-[#161a1e] border-l border-neutral-800 flex flex-col justify-between flex-shrink-0 z-30">
           
           {/* ========================================================= */}
-          {/* CASE 1: DUAL COLUMN KEYPAD (Normal In-Game Flow)          */}
+          {/* OPTION SET 1: DUAL COLUMN KEYPAD                          */}
           {/* ========================================================= */}
           {taggerMode === "DUAL_KEYPAD" && (
             <div className="flex-1 flex flex-col justify-between overflow-hidden">
@@ -766,10 +890,10 @@ export default function VolleyballTaggerWorkspace({
                   </button>
                 </div>
 
-                {/* Dual Columns: Left is Home Team, Right is Away Team */}
+                {/* Dual Columns */}
                 <div className="flex-1 grid grid-cols-2">
                   
-                  {/* Left Column: Home Team (MHS) */}
+                  {/* Left Column: Home Team */}
                   <div className="bg-[#f0f2f5] border-r border-neutral-300 flex flex-col">
                     <div className="p-3 font-extrabold text-neutral-900 text-sm border-b border-neutral-300 bg-white">
                       {homeTeam}
@@ -780,7 +904,12 @@ export default function VolleyballTaggerWorkspace({
                       <div className="flex flex-col">
                         <button
                           type="button"
-                          onClick={() => handleLogAce("home")}
+                          onClick={() => {
+                            setHomeScore(prev => prev + 1);
+                            const tag: TimelineTag = { id: `ace_${Date.now()}`, label: "Ace #9", timeSec: currentTime, trackIndex: 0, theme: "light", team: "home" };
+                            setTimelineTags(prev => [...prev, tag]);
+                            triggerAlert("success", "Point MHS! Ace logged.");
+                          }}
                           className="w-full text-left px-4 py-3 bg-white hover:bg-slate-100 text-neutral-900 font-bold border-b border-neutral-300 cursor-pointer transition-colors shadow-2xs"
                         >
                           Ace
@@ -805,7 +934,7 @@ export default function VolleyballTaggerWorkspace({
                       <div className="flex flex-col">
                         <button
                           type="button"
-                          onClick={handleStartRallyBreakdown}
+                          onClick={handleStartWaterfallRally}
                           className="w-full text-left px-4 py-3 bg-[#6b757e] hover:bg-[#78838d] text-white font-bold border-b border-neutral-600 cursor-pointer transition-colors"
                         >
                           Serve Receive
@@ -828,7 +957,7 @@ export default function VolleyballTaggerWorkspace({
                     )}
                   </div>
 
-                  {/* Right Column: Away Team (Team 2) */}
+                  {/* Right Column: Away Team */}
                   <div className="bg-[#9da3a8] flex flex-col">
                     <div className="p-3 font-extrabold text-white text-sm bg-[#4a5259] border-b border-neutral-600">
                       {awayTeam}
@@ -839,7 +968,12 @@ export default function VolleyballTaggerWorkspace({
                       <div className="flex flex-col">
                         <button
                           type="button"
-                          onClick={() => handleLogAce("away")}
+                          onClick={() => {
+                            setAwayScore(prev => prev + 1);
+                            const tag: TimelineTag = { id: `ace_${Date.now()}`, label: "Ace #1", timeSec: currentTime, trackIndex: 0, theme: "dark", team: "away" };
+                            setTimelineTags(prev => [...prev, tag]);
+                            triggerAlert("success", `Point ${awayTeam}! Ace logged.`);
+                          }}
                           className="w-full text-left px-4 py-3 bg-white hover:bg-slate-100 text-neutral-900 font-bold border-b border-neutral-600 cursor-pointer transition-colors shadow-2xs"
                         >
                           Ace
@@ -860,11 +994,11 @@ export default function VolleyballTaggerWorkspace({
                         </button>
                       </div>
                     ) : (
-                      // Away is Receiving (Dark Charcoal)
+                      // Away is Receiving (Clicking Serve Receive starts the Waterfall!)
                       <div className="flex flex-col">
                         <button
                           type="button"
-                          onClick={handleStartRallyBreakdown}
+                          onClick={handleStartWaterfallRally}
                           className="w-full text-left px-4 py-3 bg-[#6b757e] hover:bg-[#78838d] text-white font-bold border-b border-neutral-600 cursor-pointer transition-colors"
                         >
                           Serve Receive
@@ -913,9 +1047,9 @@ export default function VolleyballTaggerWorkspace({
           )}
 
           {/* ========================================================= */}
-          {/* CASE 2: "COMPLETE THE TAG" ACCORDION RALLY WORKFLOW       */}
+          {/* OPTION SET 2: WATERFALL RALLY ACCORDION                   */}
           {/* ========================================================= */}
-          {taggerMode === "ACCORDION_RALLY" && (
+          {taggerMode === "WATERFALL_RALLY" && (
             <div className="flex-1 flex flex-col overflow-hidden">
               
               {/* Header */}
@@ -940,31 +1074,28 @@ export default function VolleyballTaggerWorkspace({
                 </button>
               </div>
 
-              {/* Color-Coded Accordions (White for Server Team, Dark for Receiver Team) */}
+              {/* Step Options (Clicking each option drops tag in Waterfall below!) */}
               <div className="flex-1 overflow-y-auto bg-neutral-900 divide-y divide-neutral-800 text-xs">
                 
-                {/* 1. Who served? */}
+                {/* 1. Who served? (Drops Tag on Row 1) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoServed" ? "" : "whoServed")}
+                    onClick={() => setActiveWaterfallStep(activeWaterfallStep === "whoServed" ? "" : "whoServed")}
                     className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
                   >
-                    <span>Who served? <span className="font-normal ml-2 font-mono text-neutral-700">{currentRally.server ? `#${currentRally.server.num} ${currentRally.server.name}` : ""}</span></span>
-                    {activeAccordionStep === "whoServed" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                    <span>Who served? <span className="font-normal ml-2 font-mono text-neutral-700">{rallySelections.server ? `#${rallySelections.server.num} ${rallySelections.server.name}` : ""}</span></span>
+                    {activeWaterfallStep === "whoServed" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
                   </button>
-                  {activeAccordionStep === "whoServed" && (
+                  {activeWaterfallStep === "whoServed" && (
                     <div className="p-3 bg-white text-neutral-900 border-t border-neutral-200">
                       <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
                         {currentServerRoster.map(ath => (
                           <button
                             key={ath.num}
                             type="button"
-                            onClick={() => {
-                              setCurrentRally(prev => ({ ...prev, server: ath }));
-                              setActiveAccordionStep("whoReceived");
-                            }}
-                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${currentRally.server?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
+                            onClick={() => handleSelectServer(ath)}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${rallySelections.server?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
                           >
                             <span className="font-bold mr-1">{ath.num}</span> {ath.name}
                           </button>
@@ -974,28 +1105,25 @@ export default function VolleyballTaggerWorkspace({
                   )}
                 </div>
 
-                {/* 2. Who received the serve? */}
+                {/* 2. Who received the serve? (Drops Tag on Row 2 - Waterfall!) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoReceived" ? "" : "whoReceived")}
+                    onClick={() => setActiveWaterfallStep(activeWaterfallStep === "whoReceived" ? "" : "whoReceived")}
                     className="w-full bg-[#3c444c] text-white px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-[#464f58] transition-colors"
                   >
-                    <span>Who received the serve? <span className="font-normal ml-2 font-mono text-slate-200">{currentRally.receiver ? `#${currentRally.receiver.num}` : ""}</span></span>
-                    {activeAccordionStep === "whoReceived" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                    <span>Who received the serve? <span className="font-normal ml-2 font-mono text-slate-200">{rallySelections.receiver ? `#${rallySelections.receiver.num}` : ""}</span></span>
+                    {activeWaterfallStep === "whoReceived" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                   </button>
-                  {activeAccordionStep === "whoReceived" && (
+                  {activeWaterfallStep === "whoReceived" && (
                     <div className="p-3 bg-[#3c444c] text-white border-t border-neutral-700">
                       <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
                         {currentReceiverRoster.map(ath => (
                           <button
                             key={ath.num}
                             type="button"
-                            onClick={() => {
-                              setCurrentRally(prev => ({ ...prev, receiver: ath }));
-                              setActiveAccordionStep("rateReceive");
-                            }}
-                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${currentRally.receiver?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-600"}`}
+                            onClick={() => handleSelectReceiver(ath)}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${rallySelections.receiver?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-600"}`}
                           >
                             <span className="font-bold mr-1">{ath.num}</span> {ath.name}
                           </button>
@@ -1009,23 +1137,20 @@ export default function VolleyballTaggerWorkspace({
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "rateReceive" ? "" : "rateReceive")}
+                    onClick={() => setActiveWaterfallStep(activeWaterfallStep === "rateReceive" ? "" : "rateReceive")}
                     className="w-full bg-[#3c444c] text-white px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-[#464f58] transition-colors"
                   >
-                    <span>Rate the serve receive. <span className="font-normal ml-2 font-mono text-slate-200">{currentRally.receiveRating !== null ? currentRally.receiveRating : ""}</span></span>
-                    {activeAccordionStep === "rateReceive" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                    <span>Rate the serve receive. <span className="font-normal ml-2 font-mono text-slate-200">{rallySelections.receiveRating !== null ? rallySelections.receiveRating : ""}</span></span>
+                    {activeWaterfallStep === "rateReceive" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                   </button>
-                  {activeAccordionStep === "rateReceive" && (
+                  {activeWaterfallStep === "rateReceive" && (
                     <div className="p-3 bg-[#2b3137] flex justify-around">
                       {[0, 1, 2, 3].map((r) => (
                         <button
                           key={r}
                           type="button"
-                          onClick={() => {
-                            setCurrentRally(prev => ({ ...prev, receiveRating: r }));
-                            setActiveAccordionStep("whoSentFreeBall");
-                          }}
-                          className={`w-12 h-10 rounded font-bold text-sm transition-all cursor-pointer ${currentRally.receiveRating === r ? "bg-orange-500 text-white shadow-lg" : "bg-neutral-800 text-slate-300 hover:bg-neutral-700"}`}
+                          onClick={() => handleRateReceive(r)}
+                          className={`w-12 h-10 rounded font-bold text-sm transition-all cursor-pointer ${rallySelections.receiveRating === r ? "bg-orange-500 text-white shadow-lg" : "bg-neutral-800 text-slate-300 hover:bg-neutral-700"}`}
                         >
                           {r}
                         </button>
@@ -1034,28 +1159,25 @@ export default function VolleyballTaggerWorkspace({
                   )}
                 </div>
 
-                {/* 4. Who sent the free ball? */}
+                {/* 4. Who sent the free ball? (Drops Tag on Row 3 - Waterfall!) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoSentFreeBall" ? "" : "whoSentFreeBall")}
+                    onClick={() => setActiveWaterfallStep(activeWaterfallStep === "whoSentFreeBall" ? "" : "whoSentFreeBall")}
                     className="w-full bg-[#3c444c] text-white px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-[#464f58] transition-colors"
                   >
-                    <span>Who sent the free ball? <span className="font-normal ml-2 font-mono text-slate-200">{currentRally.freeBallSender ? `#${currentRally.freeBallSender.num} ${currentRally.freeBallSender.name}` : ""}</span></span>
-                    {activeAccordionStep === "whoSentFreeBall" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                    <span>Who sent the free ball? <span className="font-normal ml-2 font-mono text-slate-200">{rallySelections.freeBallSender ? `#${rallySelections.freeBallSender.num} ${rallySelections.freeBallSender.name}` : ""}</span></span>
+                    {activeWaterfallStep === "whoSentFreeBall" ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                   </button>
-                  {activeAccordionStep === "whoSentFreeBall" && (
+                  {activeWaterfallStep === "whoSentFreeBall" && (
                     <div className="p-3 bg-[#3c444c] text-white">
                       <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
                         {currentReceiverRoster.map(ath => (
                           <button
                             key={ath.num}
                             type="button"
-                            onClick={() => {
-                              setCurrentRally(prev => ({ ...prev, freeBallSender: ath }));
-                              setActiveAccordionStep("whoReceivedFreeBall");
-                            }}
-                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${currentRally.freeBallSender?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-600"}`}
+                            onClick={() => handleSelectFreeBallSender(ath)}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${rallySelections.freeBallSender?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-600"}`}
                           >
                             <span className="font-bold mr-1">{ath.num}</span> {ath.name}
                           </button>
@@ -1065,28 +1187,25 @@ export default function VolleyballTaggerWorkspace({
                   )}
                 </div>
 
-                {/* 5. Who received the free ball? */}
+                {/* 5. Who received the free ball? (Drops Tag on Row 4 - Waterfall!) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoReceivedFreeBall" ? "" : "whoReceivedFreeBall")}
+                    onClick={() => setActiveWaterfallStep(activeWaterfallStep === "whoReceivedFreeBall" ? "" : "whoReceivedFreeBall")}
                     className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
                   >
-                    <span>Who received the free ball? <span className="font-normal ml-2 font-mono text-neutral-700">{currentRally.freeBallReceiver ? `#${currentRally.freeBallReceiver.num} ${currentRally.freeBallReceiver.name}` : ""}</span></span>
-                    {activeAccordionStep === "whoReceivedFreeBall" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                    <span>Who received the free ball? <span className="font-normal ml-2 font-mono text-neutral-700">{rallySelections.freeBallReceiver ? `#${rallySelections.freeBallReceiver.num} ${rallySelections.freeBallReceiver.name}` : ""}</span></span>
+                    {activeWaterfallStep === "whoReceivedFreeBall" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
                   </button>
-                  {activeAccordionStep === "whoReceivedFreeBall" && (
+                  {activeWaterfallStep === "whoReceivedFreeBall" && (
                     <div className="p-3 bg-white text-neutral-900">
                       <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
                         {currentServerRoster.map(ath => (
                           <button
                             key={ath.num}
                             type="button"
-                            onClick={() => {
-                              setCurrentRally(prev => ({ ...prev, freeBallReceiver: ath }));
-                              setActiveAccordionStep("whoAssisted");
-                            }}
-                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${currentRally.freeBallReceiver?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
+                            onClick={() => handleSelectFreeBallReceiver(ath)}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${rallySelections.freeBallReceiver?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
                           >
                             <span className="font-bold mr-1">{ath.num}</span> {ath.name}
                           </button>
@@ -1096,28 +1215,25 @@ export default function VolleyballTaggerWorkspace({
                   )}
                 </div>
 
-                {/* 6. Who assisted? */}
+                {/* 6. Who assisted? (Drops Tag on Row 1) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoAssisted" ? "" : "whoAssisted")}
+                    onClick={() => setActiveWaterfallStep(activeWaterfallStep === "whoAssisted" ? "" : "whoAssisted")}
                     className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
                   >
-                    <span>Who assisted? <span className="font-normal ml-2 font-mono text-neutral-700">{currentRally.assistingPlayer ? `#${currentRally.assistingPlayer.num} ${currentRally.assistingPlayer.name}` : ""}</span></span>
-                    {activeAccordionStep === "whoAssisted" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                    <span>Who assisted? <span className="font-normal ml-2 font-mono text-neutral-700">{rallySelections.assistingPlayer ? `#${rallySelections.assistingPlayer.num} ${rallySelections.assistingPlayer.name}` : ""}</span></span>
+                    {activeWaterfallStep === "whoAssisted" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
                   </button>
-                  {activeAccordionStep === "whoAssisted" && (
+                  {activeWaterfallStep === "whoAssisted" && (
                     <div className="p-3 bg-white text-neutral-900">
                       <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
                         {currentServerRoster.map(ath => (
                           <button
                             key={ath.num}
                             type="button"
-                            onClick={() => {
-                              setCurrentRally(prev => ({ ...prev, assistingPlayer: ath }));
-                              setActiveAccordionStep("whoGotKill");
-                            }}
-                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${currentRally.assistingPlayer?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
+                            onClick={() => handleSelectAssistingPlayer(ath)}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${rallySelections.assistingPlayer?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
                           >
                             <span className="font-bold mr-1">{ath.num}</span> {ath.name}
                           </button>
@@ -1127,28 +1243,25 @@ export default function VolleyballTaggerWorkspace({
                   )}
                 </div>
 
-                {/* 7. Who got the kill? */}
+                {/* 7. Who got the kill? (Drops Tag on Row 2 with Caliper Handles!) */}
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "whoGotKill" ? "" : "whoGotKill")}
+                    onClick={() => setActiveWaterfallStep(activeWaterfallStep === "whoGotKill" ? "" : "whoGotKill")}
                     className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
                   >
-                    <span>Who got the kill? <span className="font-normal ml-2 font-mono text-neutral-700">{currentRally.killingPlayer ? `#${currentRally.killingPlayer.num}` : ""}</span></span>
-                    {activeAccordionStep === "whoGotKill" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                    <span>Who got the kill? <span className="font-normal ml-2 font-mono text-neutral-700">{rallySelections.killingPlayer ? `#${rallySelections.killingPlayer.num}` : ""}</span></span>
+                    {activeWaterfallStep === "whoGotKill" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
                   </button>
-                  {activeAccordionStep === "whoGotKill" && (
+                  {activeWaterfallStep === "whoGotKill" && (
                     <div className="p-3 bg-white text-neutral-900">
                       <div className="grid grid-cols-3 gap-y-2 gap-x-1 text-xs">
                         {currentServerRoster.map(ath => (
                           <button
                             key={ath.num}
                             type="button"
-                            onClick={() => {
-                              setCurrentRally(prev => ({ ...prev, killingPlayer: ath }));
-                              setActiveAccordionStep("attackLocation");
-                            }}
-                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${currentRally.killingPlayer?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
+                            onClick={() => handleSelectKillingPlayer(ath)}
+                            className={`p-1.5 text-left font-sans text-[11px] rounded cursor-pointer ${rallySelections.killingPlayer?.num === ath.num ? "bg-orange-500 text-white font-bold" : "hover:bg-neutral-100"}`}
                           >
                             <span className="font-bold mr-1">{ath.num}</span> {ath.name}
                           </button>
@@ -1162,14 +1275,14 @@ export default function VolleyballTaggerWorkspace({
                 <div>
                   <button
                     type="button"
-                    onClick={() => setActiveAccordionStep(activeAccordionStep === "attackLocation" ? "" : "attackLocation")}
+                    onClick={() => setActiveWaterfallStep(activeWaterfallStep === "attackLocation" ? "" : "attackLocation")}
                     className="w-full bg-white text-neutral-900 px-4 py-2.5 flex items-center justify-between font-bold cursor-pointer hover:bg-slate-50 transition-colors"
                   >
                     <span>Where did the attack occur?</span>
-                    {activeAccordionStep === "attackLocation" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                    {activeWaterfallStep === "attackLocation" ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
                   </button>
                   
-                  {activeAccordionStep === "attackLocation" && (
+                  {activeWaterfallStep === "attackLocation" && (
                     <div className="p-4 bg-white text-neutral-900 flex flex-col gap-3">
                       
                       {/* Deflected Checkbox */}
@@ -1177,8 +1290,8 @@ export default function VolleyballTaggerWorkspace({
                         <label className="flex items-center gap-2 cursor-pointer select-none">
                           <input
                             type="checkbox"
-                            checked={currentRally.attackDeflected}
-                            onChange={(e) => setCurrentRally(prev => ({ ...prev, attackDeflected: e.target.checked }))}
+                            checked={rallySelections.attackDeflected}
+                            onChange={(e) => setRallySelections(prev => ({ ...prev, attackDeflected: e.target.checked }))}
                             className="w-4 h-4 rounded text-orange-500 focus:ring-0 cursor-pointer"
                           />
                           <span className="font-semibold text-neutral-800">Attack was deflected</span>
@@ -1195,30 +1308,27 @@ export default function VolleyballTaggerWorkspace({
                         >
                           {/* Left Half Court */}
                           <rect x="20" y="15" width="95" height="90" fill="#ffffff" stroke="#000000" strokeWidth="2" />
-                          {/* Left Frontcourt */}
                           <rect x="83" y="15" width="32" height="90" fill="#e8ecef" stroke="#000000" strokeWidth="2" />
 
                           {/* Right Half Court */}
                           <rect x="125" y="15" width="95" height="90" fill="#ffffff" stroke="#000000" strokeWidth="2" />
-                          {/* Right Frontcourt */}
                           <rect x="125" y="15" width="32" height="90" fill="#e8ecef" stroke="#000000" strokeWidth="2" />
 
                           {/* Thick Center Net */}
                           <line x1="120" y1="8" x2="120" y2="112" stroke="#000000" strokeWidth="4" />
 
-                          {/* Dashed Zone Lines (Horizontal) */}
+                          {/* Dashed Zone Lines */}
                           <line x1="0" y1="45" x2="240" y2="45" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
                           <line x1="0" y1="75" x2="240" y2="75" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
 
-                          {/* Dashed Zone Lines (Vertical) */}
                           <line x1="51" y1="0" x2="51" y2="120" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
                           <line x1="83" y1="0" x2="83" y2="120" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
                           <line x1="157" y1="0" x2="157" y2="120" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
                           <line x1="189" y1="0" x2="189" y2="120" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
 
                           {/* Landing Black Cross (+) */}
-                          {currentRally.attackLocation ? (
-                            <g transform={`translate(${currentRally.attackLocation.x}, ${currentRally.attackLocation.y})`}>
+                          {rallySelections.attackLocation ? (
+                            <g transform={`translate(${rallySelections.attackLocation.x}, ${rallySelections.attackLocation.y})`}>
                               <line x1="-7" y1="0" x2="7" y2="0" stroke="#000000" strokeWidth="2.5" />
                               <line x1="0" y1="-7" x2="0" y2="7" stroke="#000000" strokeWidth="2.5" />
                             </g>
@@ -1232,7 +1342,7 @@ export default function VolleyballTaggerWorkspace({
                       </div>
 
                       <div className="text-[11px] text-neutral-500 text-center italic">
-                        Click on the court to place the landing mark (+) and complete tag
+                        Click court location to place (+) mark & complete rally
                       </div>
 
                     </div>
@@ -1245,9 +1355,9 @@ export default function VolleyballTaggerWorkspace({
           )}
 
           {/* ========================================================= */}
-          {/* CASE 3: ERROR / VIOLATION ATHLETE PROMPT                  */}
+          {/* OPTION SET 3: SERVE ERROR ATHLETE PROMPT                  */}
           {/* ========================================================= */}
-          {taggerMode === "ERROR_PROMPT" && (
+          {taggerMode === "SERVE_ERROR_PROMPT" && (
             <div className="flex-1 flex flex-col overflow-hidden">
               <div className="h-9 bg-[#111417] border-b border-neutral-800 px-4 flex items-center justify-center flex-shrink-0">
                 <span className="font-extrabold text-xs tracking-wider text-slate-100 font-sans">
@@ -1256,9 +1366,7 @@ export default function VolleyballTaggerWorkspace({
               </div>
 
               <div className="bg-white border-b border-neutral-300 px-4 py-2 flex items-center justify-between text-neutral-900 font-bold text-xs flex-shrink-0">
-                <span className="font-extrabold">
-                  {errorPromptContext.team === "home" ? `${homeTeam} ${errorPromptContext.type === "serveError" ? "Serve Error" : "Violation"}` : `${awayTeam} ${errorPromptContext.type === "serveError" ? "Serve Error" : "Violation"}`}
-                </span>
+                <span className="font-extrabold">{servingTeam === "home" ? `${homeTeam} Serve Error` : `${awayTeam} Serve Error`}</span>
                 <button
                   type="button"
                   onClick={handleUndo}
@@ -1272,16 +1380,16 @@ export default function VolleyballTaggerWorkspace({
               <div className="flex-1 bg-white p-4 flex flex-col justify-between overflow-y-auto">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between font-bold text-neutral-900 text-xs pb-2 border-b border-neutral-200">
-                    <span>{errorPromptContext.type === "serveError" ? "Who served the error?" : "Who committed the violation?"}</span>
+                    <span>Who served the error?</span>
                     <ChevronUp className="w-4 h-4 text-neutral-500" />
                   </div>
 
                   <div className="grid grid-cols-3 gap-y-3 gap-x-1 text-neutral-900 text-xs">
-                    {(errorPromptContext.team === "home" ? homeRoster : awayRoster).map(ath => (
+                    {currentServerRoster.map(ath => (
                       <button
                         key={ath.num}
                         type="button"
-                        onClick={() => handleSelectErrorAthlete(ath)}
+                        onClick={() => handleSelectServeErrorAthlete(ath)}
                         className="p-1.5 text-left font-sans text-[11px] rounded transition-colors cursor-pointer hover:bg-orange-100 hover:font-bold border border-transparent hover:border-orange-300"
                       >
                         <span className="font-bold mr-1">{ath.num}</span> {ath.name}
@@ -1291,7 +1399,7 @@ export default function VolleyballTaggerWorkspace({
                 </div>
 
                 <div className="pt-4 border-t border-neutral-200 flex justify-between text-[11px] text-neutral-700">
-                  <button type="button" onClick={() => handleSelectErrorAthlete({ num: 0, name: "Unknown" })} className="hover:underline">Unknown Athlete</button>
+                  <button type="button" onClick={() => handleSelectServeErrorAthlete({ num: 0, name: "Unknown" })} className="hover:underline">Unknown Athlete</button>
                   <button type="button" onClick={() => setShowRosterModal(true)} className="flex items-center gap-1 hover:underline"><Pencil className="w-3 h-3" /> Edit Roster</button>
                 </div>
               </div>
@@ -1304,7 +1412,7 @@ export default function VolleyballTaggerWorkspace({
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* 3. MODALS                                                     */}
+      {/* 3. MODALS (Coach Notes, Problem Report, Options, Rosters)     */}
       {/* ------------------------------------------------------------- */}
 
       {/* Coach Notes Modal */}
@@ -1323,7 +1431,7 @@ export default function VolleyballTaggerWorkspace({
               value={coachNotesText}
               onChange={(e) => setCoachNotesText(e.target.value)}
               rows={4}
-              placeholder="Enter rotation notes or specific coaching observations..."
+              placeholder="Enter rotation notes or coaching feedback..."
               className="w-full bg-neutral-900 border border-neutral-800 rounded p-2.5 text-xs text-white focus:outline-none focus:border-orange-500 font-sans"
             />
 
